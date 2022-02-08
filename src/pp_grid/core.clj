@@ -1,0 +1,286 @@
+(ns pp-grid.core
+  (:gen-class)
+  (:require [clojure.string :as s]
+            [clojure.pprint]
+
+            [potemkin :as p]
+
+            [pp-grid.ansi-escape-code :as ecodes]))
+
+(declare
+ add
+ compute-ranges
+ escaped-char?
+ grid?
+ render
+ width
+ height
+ tf-translate
+ transform
+ update-ranges
+ valid-key?
+ valid-value?
+ validate-key
+ validate-value)
+
+(defrecord EscapedChar [escape-code value]
+  Object
+  (toString [this] (render this)))
+
+#_:clj-kondo/ignore
+(p/def-map-type Grid [m metadata]
+  (get [this k default-value]
+       (cond
+         (#{:mins :maxs :dimension} k) (get metadata k default-value)
+         (= k :min-x) (first (:mins metadata))
+         (= k :max-x) (first (:maxs metadata))
+         (= k :min-y) (second (:mins metadata))
+         (= k :max-y) (second (:maxs metadata))
+         (= k :width) (width this)
+         (= k :height) (height this)
+         :else (if (valid-key? (:dimension metadata) k)
+                 (get m k default-value)
+                 default-value)))
+  (assoc [this k v]
+         (when (and (validate-key (:dimension metadata) k) (validate-value v))
+           (if (grid? v)
+             (let [ds (map - k (:mins v))]
+               (add this (transform v (apply tf-translate ds))))
+             (Grid. (assoc m k v) (update-ranges metadata k)))))
+  (dissoc [this k]
+          (when (validate-key (:dimension metadata) k)
+            (let [new-g (Grid. (dissoc m k) metadata)
+                  dimension (:dimension metadata)]
+              (with-meta new-g (apply update-ranges {:dimension dimension} (keys new-g))))))
+  (keys [this] (keys m))
+  (meta [this] metadata)
+  (empty [this] (Grid. {} {:dimension (:dimension metadata)}))
+  (with-meta [this metadata] (Grid. m metadata))
+  clojure.lang.IPersistentCollection
+  (equiv
+   [this x]
+   (if (string? x)
+     (= (render this) x)
+     (and (or (instance? java.util.Map x) (map? x))
+          (= x m))))
+  Object
+  (toString [this] (render this)))
+
+(defn empty-grid
+  ([]
+   (empty-grid 2))
+  ([dimension]
+   {:pre [(integer? dimension)
+          (pos? dimension)]}
+   (Grid. {} {:dimension dimension})))
+
+(defn width [g]
+  (if (empty? g)
+    0
+    (inc (- (:max-x g) (:min-x g)))))
+
+(defn height [g]
+  (if (empty? g)
+    0
+    (inc (- (:max-y g) (:min-y g)))))
+
+(defn escaped-char? [x]
+  (instance? EscapedChar x))
+
+(defn grid? [x]
+  (instance? Grid x))
+
+(defn escaped-char [c escape-code]
+  (->EscapedChar escape-code c))
+
+(defn update-ranges
+  [metadata & ks]
+  (if (empty? ks)
+    metadata
+    (let [mins (:mins metadata nil)
+          maxs (:maxs metadata nil)]
+      (assoc metadata
+             :mins (apply (partial map min)
+                          (if (nil? mins) ks (conj ks mins)))
+             :maxs (apply (partial map max)
+                          (if (nil? maxs) ks (conj ks maxs)))))))
+
+(defn add [& gs]
+  (cond
+    (zero? (count gs)) (empty-grid)
+    (= 1 (count gs)) (first gs)
+    :else (let [[ga gb & gcs] gs]
+            (apply add
+                   (apply assoc ga (mapcat identity gb))
+                   gcs))))
+
+(defn subtract [& gs]
+  (cond
+    (zero? (count gs)) (empty-grid)
+    (= 1 (count gs)) (first gs)
+    :else (let [[ga gb & gcs] gs]
+            (cond
+              (empty? ga) (empty-grid)
+              (empty? gb) (apply subtract ga gcs)
+              :else (apply subtract
+                           (apply dissoc ga (keys gb))
+                           gcs)))))
+
+(defn decorate [g & escape-codes]
+  (reduce
+   (fn [acc [k v]]
+     (let [escape-code (apply str escape-codes)
+           new-v (if (escaped-char? v)
+                   (->EscapedChar (apply str escape-code (:escape-code v))
+                                  (:value v))
+                   (->EscapedChar escape-code v))]
+       (assoc acc k new-v)))
+   (empty g)
+   g))
+
+(defn ++ [& gs]
+  (add gs))
+
+(defn -- [& gs]
+  (subtract gs))
+
+(defn valid-key? [dimension k]
+  (and
+   (vector? k)
+   (every? integer? k)
+   (= (count k) dimension)))
+
+(defn valid-value? [v]
+  (contains? (methods render) (type v)))
+
+(defn validate-key [dimension k]
+  (when-not (valid-key? dimension k)
+    (throw (IllegalArgumentException. (str "Key expected to be a vector of "
+                                           dimension " integers"))))
+  k)
+
+(defn validate-value [v]
+  (when-not (valid-value? v)
+    (throw (IllegalArgumentException. "Value must be a char, a Grid or a EscapedChar")))
+  true)
+
+(defn round [n]
+  (if (integer? n)
+    n
+    (Math/round (double n))))
+
+(defn transform
+  ([g f] (transform g f (:dimension g)))
+  ([g f dimension]
+   (let [transformed (reduce
+                      (fn [acc [k v]]
+                        (let [new-k (into [] (map round (f k)))]
+                          (assoc acc new-k v)))
+                      (empty-grid dimension)
+                      g)]
+     (with-meta transformed (apply update-ranges
+                                   {:dimension dimension}
+                                   (keys transformed))))))
+
+(defn tf-translate [& deltas]
+  (fn [k]
+    (map + k (take (count k) (concat deltas (repeat 0))))))
+
+(defn tf-scale [& ns]
+  (fn [k]
+    (map * k (take (count k) (concat ns (repeat 1))))))
+
+(defn tf-transpose []
+  (fn [k]
+    (reverse k)))
+
+(defn tf-hflip []
+  (fn [k]
+    (let [[x y] (validate-key 2 k)]
+      (list (- x) y))))
+
+(defn tf-vflip []
+  (fn [k]
+    (let [[x y] (validate-key 2 k)]
+      (list x (- y)))))
+
+(defn tf-project
+  ([target-dimension]
+   (tf-project target-dimension identity))
+  ([target-dimension project-fn]
+   (fn [k]
+     (take target-dimension (concat (project-fn k) (repeat 0))))))
+
+(defn tf-rotate [radians]
+  (fn [k]
+    (let [[x y] (validate-key 2 k)]
+      (list
+       (- (* x (Math/cos radians))
+          (* y (Math/sin radians)))
+       (+ (* x (Math/sin radians))
+          (* y (Math/cos radians)))))))
+
+(defn tf-rotate-90-degrees []
+  (fn [k]
+    (let [[x y] (validate-key 2 k)]
+      (list (- y) x))))
+
+(defmulti ^String render-grid :dimension)
+
+(defmethod render-grid 1 [g]
+  (if (empty? g)
+    nil
+    (let [min-x (:min-x g)
+          max-x (:max-x g)
+          xs (range min-x (inc max-x))
+          get-rendered (fn [x] (render (get g [x] " ")))]
+      (apply str (map get-rendered xs)))))
+
+(defmethod render-grid 2 [g]
+  (if (empty? g)
+    nil
+    (let [min-x (:min-x g)
+          min-y (:min-y g)
+          max-x (:max-x g)
+          max-y (:max-y g)
+          xs (range min-x (inc max-x))
+          ys (range min-y (inc max-y))
+          get-rendered (fn [x y] (render (get g [x y] " ")))]
+      (s/join
+       \newline
+       (for [y ys]
+         (apply str (map get-rendered xs (repeat y))))))))
+
+(defmethod render-grid :default [g]
+  (if (empty? g)
+    nil
+    (render-grid (transform g (tf-project 2) 2))))
+
+(defmulti ^String render type)
+
+(defmethod render Grid [g]
+  (if (empty? g)
+    nil
+    (render-grid g)))
+
+(defmethod render EscapedChar [x]
+  (str (:escape-code x)
+       (:value x)
+       ecodes/ESCAPE-CODE-RESET))
+
+(defmethod render java.lang.Character [x]
+  (str x))
+
+(defmethod render String [x] x)
+
+(defmethod print-method Grid [g ^java.io.Writer w]
+  (.write w (render g)))
+
+(defmethod print-method EscapedChar [x ^java.io.Writer w]
+  (.write w (render x)))
+
+(defmethod clojure.pprint/simple-dispatch Grid [g]
+  (println (render g)))
+
+(defmethod clojure.pprint/simple-dispatch EscapedChar [x]
+  (println (render x)))
