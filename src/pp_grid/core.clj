@@ -1,5 +1,4 @@
 (ns pp-grid.core
-  (:gen-class)
   (:require [clojure.string :as s]
             [clojure.pprint]
 
@@ -105,7 +104,9 @@
              :maxs (apply (partial map max)
                           (if (nil? maxs) ks (conj ks maxs)))))))
 
-(defn add [& gs]
+(defn add
+  "Constructs a grid with all given grids added together."
+  [& gs]
   (cond
     (zero? (count gs)) (empty-grid)
     (= 1 (count gs)) (first gs)
@@ -114,7 +115,9 @@
                    (apply assoc ga (mapcat identity gb))
                    gcs))))
 
-(defn subtract [& gs]
+(defn subtract
+  "Returns the first grid minus keys in rest of the grids."
+  [& gs]
   (cond
     (zero? (count gs)) (empty-grid)
     (= 1 (count gs)) (first gs)
@@ -126,7 +129,9 @@
                            (apply dissoc ga (keys gb))
                            gcs)))))
 
-(defn decorate [g & escape-codes]
+(defn decorate
+  "Decorates a grid with given ansi-escape-codes."
+  [g & escape-codes]
   (reduce
    (fn [acc [k v]]
      (let [escape-code (apply str escape-codes)
@@ -138,10 +143,14 @@
    (empty g)
    g))
 
-(defn ++ [& gs]
+(defn ++
+  "Convenience wrapper for add to accept grids as args."
+  [& gs]
   (add gs))
 
-(defn -- [& gs]
+(defn --
+  "Convenience wrapper for subtract to accept grids as args."
+  [& gs]
   (subtract gs))
 
 (defn valid-key? [dimension k]
@@ -170,6 +179,11 @@
     (Math/round (double n))))
 
 (defn transform
+  "Transforms a grid into another grid using given transformation function.
+
+  A transformation function accepts a key (coordinate vector) and returns another key.
+
+  For example transformation functions, take a look at the tf-* functions."
   ([g f] (transform g f (:dimension g)))
   ([g f dimension]
    (let [transformed (reduce
@@ -272,6 +286,10 @@
   (str x))
 
 (defmethod render String [x] x)
+
+;;
+;; Overwrite how Grid and EscapedChar get printed: Make them print the rendered string
+;;
 
 (defmethod print-method Grid [g ^java.io.Writer w]
   (.write w (render g)))

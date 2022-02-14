@@ -209,12 +209,12 @@ which gives
 Any grid can be decorated using ansi-escape-codes:
 
 ```
-(defn example-decorated-text [s]
+(defn make-decorated-text [s]
   (-> s
       g/text
       (g/decorate g/ESCAPE-CODE-BACKGROUND-BLUE)))
 
-(example-decorated-text "HELLO")
+(make-decorated-text "HELLO")
 ```
 
 which prints "HELLO" in blue, if our terminal supports ansi-escape-codes. Depending

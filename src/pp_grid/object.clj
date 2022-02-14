@@ -5,6 +5,9 @@
             [pp-grid.layout :as l]))
 
 (defn text
+  "Constructs a grid containing given string.
+
+  Each line in the string is put in a new row."
   ([s]
    (text s 0 0))
   ([s pad-left pad-right]
@@ -27,6 +30,9 @@
          (c/empty-grid)))))
 
 (defn hline
+  "Constructs a horizontal line of given length.
+
+  For example, (hline 3) is '---'."
   ([n]
    (hline n \─ \─ \─))
   ([n body-char]
@@ -45,6 +51,13 @@
               end-char))))))
 
 (defn vline
+  "Constructs a vertical line of given length.
+
+  For example, (vline 3) is
+  |
+  |
+  |
+  "
   ([n]
    (vline n \│ \│ \│))
   ([n body-char]
@@ -62,24 +75,45 @@
                    end-char))))))
 
 (defn hfill
+  "Constructs a horizontal-filler of given size.
+
+  For example, (hfill 3 \\*) is '***'."
   ([n]
    (hfill n \space))
   ([n c]
    (hline n c)))
 
 (defn vfill
+  "Constructs a vertical-filler of given size.
+
+  For example, (vfill 3 \\*) is
+  *
+  *
+  *
+  "
   ([n]
    (vfill n \space))
   ([n c]
    (vline n c)))
 
 (defn fill
+  "Constructs a filler of given width and height.
+
+  For example, (fill 4 4 \\*) is
+  ****
+  ****
+  ****
+  ****
+  "
   ([w h]
    (fill w h \space))
   ([w h c]
    (l/valign (repeat h (hfill w c)))))
 
 (defn left-arrow
+  "Constructs a left-arrow of given length.
+
+  For example, (left-arrow 4) is '◀───'."
   ([n]
    (left-arrow n \─ "◀"))
   ([n body-char]
@@ -88,6 +122,9 @@
    (hline n body-char head-char body-char)))
 
 (defn right-arrow
+  "Constructs a right-arrow of given length.
+
+  For example, (right-arrow 4) is '───▶︎'."
   ([n]
    (right-arrow n \─ "▶︎"))
   ([n body-char]
@@ -96,6 +133,9 @@
    (hline n body-char body-char head-char)))
 
 (defn left-right-arrow
+  "Constructs a left-right-arrow of given length.
+
+  For example, (left-right-arrow 4) is '◀──▶︎'."
   ([n]
    (left-right-arrow n \─ "◀" "▶︎"))
   ([n body-char]
@@ -104,6 +144,14 @@
    (hline n body-char left-head-char right-head-char)))
 
 (defn up-arrow
+  "Constructs a up-arrow of given length.
+
+  For example, (up-arrow 4) is
+  ▲
+  │
+  │
+  │
+  "
   ([n]
    (up-arrow n \│ "▲"))
   ([n body-char]
@@ -112,6 +160,14 @@
    (vline n body-char head-char body-char)))
 
 (defn down-arrow
+  "Constructs a down-arrow of given length.
+
+  For example, (down-arrow 4) is
+  │
+  │
+  │
+  ▼
+  "
   ([n]
    (down-arrow n \│ "▼"))
   ([n body-char]
@@ -120,6 +176,14 @@
    (vline n body-char body-char head-char)))
 
 (defn up-down-arrow
+  "Constructs a up-down-arrow of given length.
+
+  For example, (up-down-arrow 4) is
+  ▲
+  │
+  │
+  ▼
+  "
   ([n]
    (up-down-arrow n \│ "▲" "▼"))
   ([n body-char]
@@ -128,6 +192,13 @@
    (vline n body-char up-head-char down-head-char)))
 
 (defn box
+  "Constructs a grid wrapping given grid into a box.
+
+  For example, (box (text \"HELLO\")) is
+  +-----+
+  |HELLO|
+  +-----+
+  "
   [g & {:keys [left-padding
                right-padding
                top-padding
@@ -163,30 +234,40 @@
                  (hline width bottom-border-char)])
       (vline height right-border-char top-right-corner-char bottom-right-corner-char)])))
 
-(defn box1 [g & {:keys [left-padding
-                        right-padding
-                        top-padding
-                        bottom-padding
-                        left-border-char
-                        right-border-char
-                        top-border-char
-                        bottom-border-char
-                        top-left-corner-char
-                        top-right-corner-char
-                        bottom-left-corner-char
-                        bottom-right-corner-char]
-                 :or {left-padding 0
-                      right-padding 0
-                      top-padding 0
-                      bottom-padding 0
-                      left-border-char "│"
-                      right-border-char "│"
-                      top-border-char "─"
-                      bottom-border-char "─"
-                      top-left-corner-char "┌"
-                      top-right-corner-char "┐"
-                      bottom-left-corner-char "└"
-                      bottom-right-corner-char "┘"}}]
+(defn box1
+  "Constructs a grid wrapping given grid into a box.
+
+  Similar to box, but uses different border.
+
+  For example, (box1 (text \"HELLO\")) is
+  ┌─────┐
+  │HELLO│
+  └─────┘
+  "
+  [g & {:keys [left-padding
+               right-padding
+               top-padding
+               bottom-padding
+               left-border-char
+               right-border-char
+               top-border-char
+               bottom-border-char
+               top-left-corner-char
+               top-right-corner-char
+               bottom-left-corner-char
+               bottom-right-corner-char]
+        :or {left-padding 0
+             right-padding 0
+             top-padding 0
+             bottom-padding 0
+             left-border-char "│"
+             right-border-char "│"
+             top-border-char "─"
+             bottom-border-char "─"
+             top-left-corner-char "┌"
+             top-right-corner-char "┐"
+             bottom-left-corner-char "└"
+             bottom-right-corner-char "┘"}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
@@ -201,30 +282,40 @@
        :bottom-left-corner-char bottom-left-corner-char
        :bottom-right-corner-char bottom-right-corner-char))
 
-(defn box2 [g & {:keys [left-padding
-                        right-padding
-                        top-padding
-                        bottom-padding
-                        left-border-char
-                        right-border-char
-                        top-border-char
-                        bottom-border-char
-                        top-left-corner-char
-                        top-right-corner-char
-                        bottom-left-corner-char
-                        bottom-right-corner-char]
-                 :or {left-padding 0
-                      right-padding 0
-                      top-padding 0
-                      bottom-padding 0
-                      left-border-char "│"
-                      right-border-char "│"
-                      top-border-char "═"
-                      bottom-border-char "═"
-                      top-left-corner-char "╒"
-                      top-right-corner-char "╕"
-                      bottom-left-corner-char "╘"
-                      bottom-right-corner-char "╛"}}]
+(defn box2
+  "Constructs a grid wrapping given grid into a box.
+
+  Similar to box, but uses different border.
+
+  For example, (box2 (text \"HELLO\")) is
+  ╒═════╕
+  │HELLO│
+  ╘═════╛
+  "
+  [g & {:keys [left-padding
+               right-padding
+               top-padding
+               bottom-padding
+               left-border-char
+               right-border-char
+               top-border-char
+               bottom-border-char
+               top-left-corner-char
+               top-right-corner-char
+               bottom-left-corner-char
+               bottom-right-corner-char]
+        :or {left-padding 0
+             right-padding 0
+             top-padding 0
+             bottom-padding 0
+             left-border-char "│"
+             right-border-char "│"
+             top-border-char "═"
+             bottom-border-char "═"
+             top-left-corner-char "╒"
+             top-right-corner-char "╕"
+             bottom-left-corner-char "╘"
+             bottom-right-corner-char "╛"}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
@@ -240,9 +331,20 @@
        :bottom-right-corner-char bottom-right-corner-char))
 
 (defn table
-  "Similar table as clojure.pprint/print-table.
+  "Constructs a table.
 
-  Adapted from source-code of clojure.pprint/print-table."
+  Produces similar table as clojure.pprint/print-table.
+
+  Adapted from source-code of clojure.pprint/print-table.
+
+  For example, (table [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
+  +----+----+
+  | :a | :b |
+  +----+----+
+  |  1 |  2 |
+  |  3 |  4 |
+  +----+----+
+  "
   [ks rows & {:keys [nsew-char
                      nse-char
                      nsw-char
@@ -314,6 +416,15 @@
                bottom-border])))
 
 (defn table0
+  "Constructs a border-less table.
+
+  For example, (table0 [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
+
+    :a   :b
+
+     1    2
+     3    4
+  "
   ([ks rows]
    (table0 ks rows true))
   ([ks rows header?]
@@ -332,6 +443,18 @@
           :header? header?)))
 
 (defn table1
+  "Constructs a table.
+
+  Similar to table but uses different border.
+
+  For example, (table1 [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
+  ┌────┬────┐
+  │ :a │ :b │
+  ├────┼────┤
+  │  1 │  2 │
+  │  3 │  4 │
+  └────┴────┘
+  "
   ([ks rows]
    (table1 ks rows true))
   ([ks rows header?]
@@ -350,6 +473,18 @@
           :header? header?)))
 
 (defn table2
+  "Constructs a table.
+
+  Similar to table but uses different border (rounded corners).
+
+  For example, (table2 [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
+  ╭────┬────╮
+  │ :a │ :b │
+  ├────┼────┤
+  │  1 │  2 │
+  │  3 │  4 │
+  ╰────┴────╯
+  "
   ([ks rows]
    (table2 ks rows true))
   ([ks rows header?]
@@ -368,6 +503,18 @@
           :header? header?)))
 
 (defn table3
+  "Constructs a table.
+
+  Similar to table but uses dotted border.
+
+  For example, (table3 [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
+  ...........
+  : :a : :b :
+  ..........:
+  :  1 :  2 :
+  :  3 :  4 :
+  :....:....:
+  "
   ([ks rows]
    (table3 ks rows true))
   ([ks rows header?]
@@ -386,6 +533,18 @@
           :header? header?)))
 
 (defn matrix
+  "Constructs a matrix.
+
+  Similar to table, but changes the border to make it look more like a matrix.
+
+  For example, (matrix [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
+  ╭           ╮
+  │  :a   :b  │
+  │           │
+  │   1    2  │
+  │   3    4  │
+  ╰           ╯
+  "
   ([ks rows]
    (matrix ks rows true))
   ([ks rows header?]
@@ -398,6 +557,25 @@
                      "│" "╮" "╯")])))
 
 (defn tree
+  "Constructs a tree representation of a sequence.
+
+  An element of the sequence can be another sequence or a grid or
+  anything that can be converted to a string.
+
+  For example, (tree [1 2 [3 [4 5] [6 7] 8]]) is
+  ┌───┐
+  │ 1 │
+  └───┘
+  ┌───┐
+  │ 2 │
+  └───┘
+  ┌───┐  ┌───┐  ┌───┐  ┌───┐
+  │ 3 │  │ 4 │  │ 6 │  │ 8 │
+  └───┘  └───┘  └───┘  └───┘
+         ┌───┐  ┌───┐
+         │ 5 │  │ 7 │
+         └───┘  └───┘
+  "
   ([node]
    (tree node 2 0))
   ([node text-wrapper-fn]
@@ -418,6 +596,16 @@
      :else (text-wrapper-fn (text (str node)) :left-padding 1 :right-padding 1))))
 
 (defn chart-xy
+  "Constructs a xy-chart (scatter plot).
+
+  For example, (chart-xy (range) [0 1 2 1 0 1 2 1 0]) is
+  y
+  ▲
+  |
+  | *   *
+  |* * * *
+  *---*---*-▶︎ x
+  "
   [xs ys & {:keys [point-symbol
                    draw-axis
                    x-label
@@ -445,6 +633,14 @@
     (c/transform p (c/tf-vflip))))
 
 (defn chart-bar
+  "Constructs a bar chart.
+
+  For example, (chart-bar [10 20 30 40]) is
+  ■■■■■■■■■■■■■ 10
+  ■■■■■■■■■■■■■■■■■■■■■■■■■■■ 20
+  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 30
+  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 40
+  "
   [ns & {:keys [labels
                 max-length
                 bar-symbol

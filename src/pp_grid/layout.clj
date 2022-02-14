@@ -2,6 +2,13 @@
   (:require [pp-grid.core :as c]))
 
 (defn valign
+  "Constructs a grid containing given grids aligned vertically.
+
+  For example, (valign [(text \"A\") (text \"B\") (text \"C\")]) is
+  A
+  B
+  C
+  "
   ([grids]
    (valign grids 0 0))
   ([grids x-padding y-padding]
@@ -22,6 +29,9 @@
           y-padding))))))
 
 (defn halign
+  "Constructs a grid containing given grids aligned horizontally.
+
+  For example, (halign [(text \"A\") (text \"B\") (text \"C\")]) is ABC."
   ([grids]
    (halign grids 0 0))
   ([grids x-padding y-padding]
@@ -43,6 +53,9 @@
           center?))))))
 
 (defn hspacer
+  "Constructs a horizontal space of given length.
+
+  For example, (hspacer 5) is \"     \"."
   ([n]
    (if (<= n 0) (c/empty-grid)
        (-> (c/empty-grid)
@@ -50,6 +63,15 @@
            (assoc [(dec n) 0] \space)))))
 
 (defn vspacer
+  "Constructs a vertical space of given length.
+
+  For example, (vspacer 5) is
+  (space)
+  (space)
+  (space)
+  (space)
+  (space)
+  "
   ([n]
    (if (<= n 0) (c/empty-grid)
        (-> (c/empty-grid)
@@ -57,11 +79,22 @@
            (assoc [0 (dec n)] \space)))))
 
 (defn spacer
+  "Constructs a rectangular space of given width and height."
   ([width height]
    (c/add (hspacer width) (vspacer height))))
 
-(defn === [x-padding & grids]
+(defn ===
+  "Horizontally aligns given grids with some defaults.
+
+  Just a convenience wrapper for halign to accept grids as args and
+  use some default values for padding and centering."
+  [x-padding & grids]
   (halign grids x-padding 0 true))
 
-(defn || [y-padding & grids]
+(defn ||
+  "Vertically aligns given grids with some defaults.
+
+  Just a convenience wrapper for valign to accept grids as args and
+  use some default values for padding and centering."
+  [y-padding & grids]
   (valign grids 0 y-padding true))
