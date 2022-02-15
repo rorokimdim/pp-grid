@@ -290,6 +290,22 @@ which gives
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 400
 ```
 
+## Clerk notebooks
+
+For viewing grids in a [clerk](https://github.com/nextjournal/clerk) notebook, we can
+set a custom viewer.
+
+For example, try
+
+```clojure
+(clerk/set-viewers! [{:pred g/grid?
+                      :render-fn '(fn [s] (v/html [:pre s]))
+                      :transform-fn #(str %)}])
+```
+
+If you learn to do something fancier please submit a pull-request to update
+this section :)
+
 ## Credits
 
 0. [Clojure](https://clojure.org/)
