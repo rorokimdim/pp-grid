@@ -69,7 +69,7 @@ There are many functions available to make writing to a grid easier. For example
 
 To try these examples in a repl, require pp-grid as follows.
 
-```
+```clojure
 (require '[pp-grid.api :as g])
 ```
 
@@ -77,7 +77,7 @@ All the examples are also available in `pp-grid.examples` namespace.
 
 ### ABCD
 
-```
+```clojure
 (defn make-abcd []
   (-> (g/empty-grid)
       (assoc [0 0] \A
@@ -107,7 +107,7 @@ C         D
 
 ### Boxed ABCD
 
-```
+```clojure
 (defn make-boxed-abcd []
   (-> (make-abcd)
       (g/box :left-padding 1 :right-padding 1)))
@@ -135,7 +135,7 @@ which gives
 
 ### Horizontally aligned boxes
 
-```
+```clojure
 (defn make-haligned-boxes []
   (let [a (g/box (g/text "AB"))
         b (g/box1 (g/text "CD"))
@@ -155,7 +155,7 @@ which gives
 
 ### Tables
 
-```
+```clojure
 (defn make-tables []
   (let [data [{:a 1 :b 2 :c 3}
               {:a 10 :b 20 :c 30}]
@@ -208,7 +208,7 @@ which gives
 
 Any grid can be decorated using ansi-escape-codes:
 
-```
+```clojure
 (defn make-decorated-text [s]
   (-> s
       g/text
