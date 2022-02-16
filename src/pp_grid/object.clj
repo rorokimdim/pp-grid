@@ -566,12 +566,15 @@
   ┌───┐
   │ 1 │
   └───┘
+  │
   ┌───┐
   │ 2 │
   └───┘
+  │
   ┌───┐  ┌───┐  ┌───┐  ┌───┐
   │ 3 │  │ 4 │  │ 6 │  │ 8 │
   └───┘  └───┘  └───┘  └───┘
+         │      │
          ┌───┐  ┌───┐
          │ 5 │  │ 7 │
          └───┘  └───┘
@@ -583,15 +586,20 @@
   ([node x-padding y-padding]
    (tree node x-padding y-padding box1))
   ([node x-padding y-padding text-wrapper-fn]
+   (tree node x-padding y-padding text-wrapper-fn "│"))
+  ([node x-padding y-padding text-wrapper-fn branch-marker]
    (cond
-     (sequential? node) (l/valign
-                         (for [n node]
-                           (if (sequential? n)
-                             (l/halign (map
-                                        #(tree % x-padding y-padding text-wrapper-fn) n)
-                                       x-padding 0)
-                             (tree n x-padding y-padding text-wrapper-fn)))
-                         0 y-padding)
+     (sequential? node) (let [args (list x-padding
+                                         y-padding
+                                         text-wrapper-fn
+                                         branch-marker)
+                              children (for [n node]
+                                         (if (sequential? n)
+                                           (l/halign (map #(apply tree % args) n) x-padding 0)
+                                           (apply tree n args)))]
+                          (as-> children $
+                            (interpose (text (str branch-marker)) $)
+                            (l/valign $ 0 y-padding)))
      (c/grid? node) node
      :else (text-wrapper-fn (text (str node)) :left-padding 1 :right-padding 1))))
 

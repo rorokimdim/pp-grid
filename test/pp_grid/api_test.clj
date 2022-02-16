@@ -88,7 +88,7 @@
     (let [grid (e/make-tree)]
       (is (= (:dimension grid) 2))
       (is (= (:width grid) 22))
-      (is (= (:height grid) 15))
+      (is (= (:height grid) 19))
       (is (g/grid? grid))))
   (testing "chart-xy"
     (let [grid (e/make-chart-xy)]
