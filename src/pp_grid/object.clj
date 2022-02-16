@@ -378,17 +378,27 @@
                 (fn [k]
                   (apply max
                          (count (str k))
-                         (map #(count (str (get % k))) rows)))
+                         (map #(c/width (get % k)) rows)))
                 ks)
         spacers (map #(apply str (repeat % ew-char)) widths)
         fmts (map #(str "%" % "s") widths)
         fmt-row (fn [leader divider trailer row]
-                  (str leader
-                       (apply str
-                              (interpose divider
-                                         (for [[col fmt] (map vector (map #(get row %) ks) fmts)]
-                                           (format fmt (str col)))))
-                       trailer))
+                  (let [vs (map #(get row %) ks)
+                        heights (map c/height vs)
+                        max-height (apply max heights)
+                        ->cols (fn [i]
+                                 (for [v vs]
+                                   (nth (s/split-lines (str v)) i "")))]
+                    (s/join
+                     \newline
+                     (for [i (range max-height)
+                           :let [cols (->cols i)]]
+                       (str leader (apply
+                                    str
+                                    (interpose divider
+                                               (for [[col fmt] (map vector cols fmts)]
+                                                 (format fmt (str col)))))
+                            trailer)))))
         top-border (text (fmt-row
                           (str se-char ew-char)
                           (str ew-char ews-char ew-char)

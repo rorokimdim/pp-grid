@@ -59,6 +59,19 @@
         matrix (g/matrix [:a :b] data)]
     (g/valign [t0 t1 t2 t3 matrix])))
 
+(defn make-nested-table []
+  (let [data [{:a 1 :b 2 :c 3 :d 4 :e 5}
+              {:a 10 :b 20 :c 30 :d 40 :e 50}]
+        t0 (g/table [:a :b :c :d :e] data)
+        t1 (g/table1 [:a :b] data)
+        abcd (make-boxed-abcd)]
+    (g/table3 [:a :b :t0 :c :t1]
+              [{:a 100
+                :b 200
+                :t0 t0
+                :c abcd
+                :t1 t1}])))
+
 (defn make-decorated-text [s]
   (-> s
       g/text

@@ -73,15 +73,25 @@
           (pos? dimension)]}
    (Grid. {} {:dimension dimension})))
 
-(defn width [g]
-  (if (empty? g)
-    0
-    (inc (- (:max-x g) (:min-x g)))))
+(defn width [x]
+  (cond
+    (string? x) (->> x
+                     (take-while #(not= % \newline))
+                     count)
+    (grid? x) (if (empty? x)
+                0
+                (inc (- (:max-x x) (:min-x x))))
+    :else (width (str x))))
 
-(defn height [g]
-  (if (empty? g)
-    0
-    (inc (- (:max-y g) (:min-y g)))))
+(defn height [x]
+  (cond
+    (string? x) (->> x
+                     (filter #(= % \newline))
+                     count
+                     inc)
+    (grid? x) (if (empty? x) 0
+                  (inc (- (:max-y x) (:min-y x))))
+    :else (height (str x))))
 
 (defn escaped-char? [x]
   (instance? EscapedChar x))
