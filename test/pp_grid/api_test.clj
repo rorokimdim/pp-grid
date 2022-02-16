@@ -39,7 +39,10 @@
   (testing "text grids"
     (is (= "hello" (g/text "hello")))
     (is (= "  hello  " (g/text "hello" 2 2)))
-    (is (= "***hello**" (g/text "hello" 3 2 \*)))))
+    (is (= "***hello**" (g/text "hello" 3 2 \*)))
+    (is (= "1" (g/text 1)))
+    (is (= ":a" (g/text :a)))
+    (is (= "(+ 1 2 3)" (g/text '(+ 1 2 3))))))
 
 (deftest test-examples
   (testing "grid illustration"

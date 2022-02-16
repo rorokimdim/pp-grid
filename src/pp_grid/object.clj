@@ -7,27 +7,32 @@
 (defn text
   "Constructs a grid containing given string.
 
+  If s is not a string, then (str s)
+  will be used.
+
   Each line in the string is put in a new row."
   ([s]
    (text s 0 0))
   ([s pad-left pad-right]
    (text s pad-left pad-right \space))
   ([s pad-left pad-right pad-char]
-   (->> s
-        s/split-lines
-        (map vector (range))
-        (reduce
-         (fn [g [y ^String line]]
-           (reduce
-            (fn [g [x v]]
-              (assoc g [x y] v))
-            g
-            (map vector
-                 (range)
-                 (str (apply str (repeat pad-left pad-char))
-                      (if (empty? line) " " line)
-                      (apply str (repeat pad-right pad-char))))))
-         (c/empty-grid)))))
+   (if (string? s)
+     (->> s
+          s/split-lines
+          (map vector (range))
+          (reduce
+           (fn [g [y ^String line]]
+             (reduce
+              (fn [g [x v]]
+                (assoc g [x y] v))
+              g
+              (map vector
+                   (range)
+                   (str (apply str (repeat pad-left pad-char))
+                        (if (empty? line) " " line)
+                        (apply str (repeat pad-right pad-char))))))
+           (c/empty-grid)))
+     (text (str s) pad-left pad-right pad-char))))
 
 (defn hline
   "Constructs a horizontal line of given length.
