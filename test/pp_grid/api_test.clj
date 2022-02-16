@@ -104,4 +104,10 @@
       (is (= (:dimension grid) 2))
       (is (= (:width grid) 46))
       (is (= (:height grid) 5))
+      (is (g/grid? grid))))
+  (testing "transformations"
+    (let [grid (e/make-transformations)]
+      (is (= (:dimension grid) 2))
+      (is (= (:width grid) 23))
+      (is (= (:height grid) 20))
       (is (g/grid? grid)))))

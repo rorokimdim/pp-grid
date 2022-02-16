@@ -72,3 +72,16 @@
 
 (defn make-chart-bar []
   (g/chart-bar [20 80 100 200 400]))
+
+(defn make-transformations []
+  (let [abcd (make-boxed-abcd)
+        width (:width abcd)
+        height (:height abcd)
+        hflipped-abcd (g/transform abcd (g/tf-hflip))
+        vflipped-abcd (g/transform abcd (g/tf-vflip))
+        vflipped-hflipped-abcd (g/transform hflipped-abcd (g/tf-vflip))]
+    (-> abcd
+        (assoc [width 0] hflipped-abcd)
+        (assoc [0 height] vflipped-abcd)
+        (assoc [width height] vflipped-hflipped-abcd)
+        (g/transform (g/tf-scale 0.75 0.75)))))

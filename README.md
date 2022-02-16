@@ -294,6 +294,55 @@ which gives
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 400
 ```
 
+### Transformations
+
+A grid can be transformed using the `transform` function.
+
+It accepts a grid and a function that takes in a coordinate vector and
+returns a coordinate vector.
+
+```clojure
+(defn make-transformations []
+  (let [abcd (make-boxed-abcd)
+        width (:width abcd)
+        height (:height abcd)
+        hflipped-abcd (g/transform abcd (g/tf-hflip))
+        vflipped-abcd (g/transform abcd (g/tf-vflip))
+        vflipped-hflipped-abcd (g/transform hflipped-abcd (g/tf-vflip))]
+    (-> abcd
+        (assoc [width 0] hflipped-abcd)
+        (assoc [0 height] vflipped-abcd)
+        (assoc [width height] vflipped-hflipped-abcd)
+        (g/transform (g/tf-scale 0.75 0.75)))))
+
+(make-transformations)
+```
+
+which gives
+
+```
++----------+----------+
+| A      B | B      A |
+|          |          |
+|          |          |
+|          |          |
+|    *     |     *    |
+|          |          |
+|          |          |
+| C      D | D      C |
++----------+----------+
++----------+----------+
+| C      D | D      C |
+|          |          |
+|          |          |
+|    *     |     *    |
+|          |          |
+|          |          |
+|          |          |
+| A      B | B      A |
++----------+----------+
+```
+
 ## Clerk notebooks
 
 For viewing grids in a [clerk](https://github.com/nextjournal/clerk) notebook, we can
