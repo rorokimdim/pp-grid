@@ -396,7 +396,7 @@ For example, try
 ```clojure
 (clerk/set-viewers! [{:pred g/grid?
                       :render-fn '(fn [s] (v/html [:pre s]))
-                      :transform-fn #(str %)}])
+                      :transform-fn str}])
 ```
 
 If you learn to do something fancier please submit a pull-request to update
