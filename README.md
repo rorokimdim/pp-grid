@@ -1,6 +1,7 @@
 # pp-grid
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.rorokimdim/pp-grid.svg)](https://clojars.org/org.clojars.rorokimdim/pp-grid)
+[![cljdoc badge](https://cljdoc.org/badge/org.clojars.rorokimdim/pp-grid)](https://cljdoc.org/d/org.clojars.rorokimdim/pp-grid)
 
 pp-grid is a clojure library to easily construct formatted text.
 
