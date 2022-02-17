@@ -1,4 +1,4 @@
-(defproject org.clojars.rorokimdim/pp-grid "0.1.3-SNAPSHOT"
+(defproject org.clojars.rorokimdim/pp-grid "0.1.3"
   :description "A clojure library for constructing formatted text."
   :url "https://github.com/rorokimdim/pp-grid"
   :license {:name "MIT License"
@@ -17,7 +17,6 @@
   :aliases {"lint" ["shell" "clj-kondo" "--lint" "src" "test" "dev"]}
 
 
-  :main ^:skip-aot pp-grid.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
