@@ -249,6 +249,10 @@
     (let [[x y] (validate-key 2 k)]
       (list (- y) x))))
 
+(defn tf-skew [a b]
+  (fn [[x y & zs]]
+    (concat [(+ x (* a y)) (+ y (* b x))] zs)))
+
 (defmulti ^String render-grid :dimension)
 
 (defmethod render-grid 1 [g]

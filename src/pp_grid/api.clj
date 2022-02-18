@@ -25,6 +25,7 @@
   tf-rotate
   tf-rotate-90-degrees
   tf-scale
+  tf-skew
   tf-translate
   tf-transpose
   tf-vflip
@@ -39,6 +40,7 @@
   halign
   vspacer
   hspacer
+  pull
   spacer
 
   ===
@@ -46,20 +48,24 @@
 
  [pp-grid.object
 
+  arrow-down
+  arrow-left
+  arrow-left-right
+  arrow-ne
+  arrow-nw
+  arrow-right
+  arrow-se
+  arrow-sw
+  arrow-up
+  arrow-up-down
   box
   box1
   box2
-  down-arrow
   fill
   hfill
   hline
-  left-arrow
-  left-right-arrow
-  right-arrow
   text
   tree
-  up-arrow
-  up-down-arrow
   vfill
   vline
 

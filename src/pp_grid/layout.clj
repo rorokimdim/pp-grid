@@ -98,3 +98,11 @@
   use some default values for padding and centering."
   [y-padding & grids]
   (valign grids 0 y-padding true))
+
+(defn pull
+  "Pulls a grid by given amounts horizontally and vertically.
+
+  Just a convenience function for transforming with tf-translate. Useful
+  for tweaking alignments."
+  [g dx dy]
+  (c/transform g (c/tf-translate dx dy)))

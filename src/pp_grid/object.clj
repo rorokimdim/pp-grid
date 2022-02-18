@@ -115,86 +115,164 @@
   ([w h c]
    (l/valign (repeat h (hfill w c)))))
 
-(defn left-arrow
-  "Constructs a left-arrow of given length.
+(defn arrow-left
+  "Constructs a left arroow of given length.
 
-  For example, (left-arrow 4) is '◀───'."
+  For example, (arrow-left 4) is '◀───'."
   ([n]
-   (left-arrow n \─ "◀"))
+   (arrow-left n \─ "◀"))
   ([n body-char]
-   (left-arrow n body-char "◀"))
+   (arrow-left n body-char "◀"))
   ([n body-char head-char]
    (hline n body-char head-char body-char)))
 
-(defn right-arrow
-  "Constructs a right-arrow of given length.
+(defn arrow-right
+  "Constructs a right arrow of given length.
 
-  For example, (right-arrow 4) is '───▶︎'."
+  For example, (arrow-right 4) is '───▶︎'."
   ([n]
-   (right-arrow n "─" "▶"))
+   (arrow-right n "─" "▶"))
   ([n body-char]
-   (right-arrow n body-char "▶"))
+   (arrow-right n body-char "▶"))
   ([n body-char head-char]
    (hline n body-char body-char head-char)))
 
-(defn left-right-arrow
-  "Constructs a left-right-arrow of given length.
+(defn arrow-left-right
+  "Constructs a left-right arrow of given length.
 
-  For example, (left-right-arrow 4) is '◀──▶︎'."
+  For example, (arrow-left-right 4) is '◀──▶︎'."
   ([n]
-   (left-right-arrow n \─ "◀" "▶︎"))
+   (arrow-left-right n \─ "◀" "▶︎"))
   ([n body-char]
-   (left-right-arrow n body-char "◀" "▶︎"))
+   (arrow-left-right n body-char "◀" "▶︎"))
   ([n body-char left-head-char right-head-char]
    (hline n body-char left-head-char right-head-char)))
 
-(defn up-arrow
-  "Constructs a up-arrow of given length.
+(defn arrow-up
+  "Constructs an up arrow of given length.
 
-  For example, (up-arrow 4) is
+  For example, (arrow-up 4) is
   ▲
   │
   │
   │
   "
   ([n]
-   (up-arrow n \│ "▲"))
+   (arrow-up n \│ "▲"))
   ([n body-char]
-   (up-arrow n body-char "▲"))
+   (arrow-up n body-char "▲"))
   ([n body-char head-char]
    (vline n body-char head-char body-char)))
 
-(defn down-arrow
-  "Constructs a down-arrow of given length.
+(defn arrow-down
+  "Constructs a down arrow of given length.
 
-  For example, (down-arrow 4) is
+  For example, (arrow-down 4) is
   │
   │
   │
   ▼
   "
   ([n]
-   (down-arrow n \│ "▼"))
+   (arrow-down n \│ "▼"))
   ([n body-char]
-   (down-arrow n body-char "▼"))
+   (arrow-down n body-char "▼"))
   ([n body-char head-char]
    (vline n body-char body-char head-char)))
 
-(defn up-down-arrow
-  "Constructs a up-down-arrow of given length.
+(defn arrow-up-down
+  "Constructs a up-down arrow of given length.
 
-  For example, (up-down-arrow 4) is
+  For example, (arrow-up-down 4) is
   ▲
   │
   │
   ▼
   "
   ([n]
-   (up-down-arrow n \│ "▲" "▼"))
+   (arrow-up-down n \│ "▲" "▼"))
   ([n body-char]
-   (up-down-arrow n body-char "▲" "▼"))
+   (arrow-up-down n body-char "▲" "▼"))
   ([n body-char up-head-char down-head-char]
    (vline n body-char up-head-char down-head-char)))
+
+(defn arrow-se
+  "Constructs an arrow pointing south-east of given length.
+
+  For example, (arrow-se 4) is -- ignore the double lines. Can't put it here
+  without escaping it!
+  \\
+   \\
+    \\
+     *
+  "
+  ([n]
+   (arrow-se n "\\"))
+  ([n body-char]
+   (arrow-se n body-char body-char "*"))
+  ([n body-char start-char end-char]
+   (apply assoc
+          (c/empty-grid)
+          (interleave (for [x (range n)]
+                        [x x])
+                      (concat (list start-char)
+                              (repeat (- n 2) body-char)
+                              (list end-char))))))
+
+(defn arrow-sw
+  "Constructs an arrow pointing south-west of given length.
+
+  For example, (arrow-sw 4) is
+     /
+    /
+   /
+  *
+  "
+  ([n]
+   (arrow-sw n "/"))
+  ([n body-char]
+   (arrow-sw n body-char body-char "*"))
+  ([n body-char start-char end-char]
+   (c/transform
+    (arrow-se n body-char start-char end-char)
+    (c/tf-hflip))))
+
+(defn arrow-ne
+  "Constructs an arrow pointing north-east of given length.
+
+  For example, (arrow-ne 4) is
+     *
+    /
+   /
+  /
+  "
+  ([n]
+   (arrow-ne n "/"))
+  ([n body-char]
+   (arrow-ne n body-char body-char "*"))
+  ([n body-char start-char end-char]
+   (c/transform
+    (arrow-se n body-char start-char end-char)
+    (c/tf-vflip))))
+
+(defn arrow-nw
+  "Constructs an arrow pointing north-west of given length.
+
+  For example, (arrow-nw 4) is -- ignore the double lines. Can't put it here
+  without escaping it!
+  *
+   \\
+    \\
+     \\
+  "
+  ([n]
+   (arrow-nw n "\\"))
+  ([n body-char]
+   (arrow-nw n body-char body-char "*"))
+  ([n body-char start-char end-char]
+   (c/transform
+    (arrow-ne n body-char start-char end-char)
+    (c/tf-hflip))))
 
 (defn box
   "Constructs a grid wrapping given grid into a box.
@@ -644,7 +722,7 @@
         p (if draw-axis
             (let [x-axis (l/===
                           1
-                          (right-arrow (+ (:width p) 2) \-)
+                          (arrow-right (+ (:width p) 2) \-)
                           (text x-label))
                   y-axis (l/||
                           0
