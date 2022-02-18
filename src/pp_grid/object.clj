@@ -668,19 +668,20 @@
                 max-length
                 bar-symbol
                 horizontal]
-         :or {max-length 40
-              labels ns
+         :or {labels ns
               horizontal true}}]
-  {:pre [(pos? max-length)]}
+  {:pre [(or (nil? max-length)
+             (pos? max-length))]}
   (let [min-n (apply min ns)
         max-n (apply max ns)
+        max-length (or max-length (if horizontal 40 10))
         max-delta (- max-n min-n)
         unit (/ max-length (if (zero? max-delta) max-length max-delta))
         scaled-ns (map (fn [v] (c/round (* v unit))) ns)
         bar-symbol (cond
                      bar-symbol bar-symbol
                      horizontal "■"
-                     :else "*")
+                     :else "█")
         text-labels (if horizontal
                       (take (count ns) (map #(text (str %)) labels))
                       (take (count ns) (map (fn [l]
@@ -692,7 +693,7 @@
       (l/valign (for [[n text-label] (map vector scaled-ns text-labels)]
                   (l/=== 1 (hline n bar-symbol) text-label)))
       (let [chart (l/halign (for [n scaled-ns]
-                              (vline n bar-symbol)) 2 0)
+                              (or (vline n bar-symbol) (text ""))) 2 0)
             flipped-chart (c/transform chart (c/tf-vflip))]
         (assoc flipped-chart
                [0 0]
