@@ -25,7 +25,7 @@
   tf-rotate
   tf-rotate-90-degrees
   tf-scale
-  tf-skew
+  tf-shear
   tf-translate
   tf-transpose
   tf-vflip

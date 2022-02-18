@@ -206,36 +206,73 @@
                                    {:dimension dimension}
                                    (keys transformed))))))
 
-(defn tf-translate [& deltas]
+(defn tf-translate
+  "Returns a function that translates a coordinate by given deltas.
+
+  For example, ((tf-translate 10 20) [1 2]) = [11 22]."
+  [& deltas]
   (fn [k]
     (map + k (take (count k) (concat deltas (repeat 0))))))
 
-(defn tf-scale [& ns]
+(defn tf-scale
+  "Returns a function that scales a coordinate by given amounts.
+
+  For example, ((tf-scale 10 2) [3 2]) = [30 4]."
+  [& ns]
   (fn [k]
     (map * k (take (count k) (concat ns (repeat 1))))))
 
-(defn tf-transpose []
+(defn tf-transpose
+  "Returns a function that transposes a coordinate.
+
+  Returns a function just to keep it consistent with other tf-*
+  functions.
+
+  For example, ((tf-transpose) [1 2]) = [2 1]."
+  []
   (fn [k]
     (reverse k)))
 
-(defn tf-hflip []
+(defn tf-hflip
+  "Returns a function that horizontally flips a coordinate.
+
+  Returns a function just to keep it consistent with other tf-*
+  functions.
+
+  For example, ((tf-hflip) [1 2]) = [-1 2]."
+  []
   (fn [k]
     (let [[x y] (validate-key 2 k)]
       (list (- x) y))))
 
-(defn tf-vflip []
+(defn tf-vflip
+  "Returns a function that vertically flips a coordinate.
+
+  Returns a function just to keep it consistent with other tf-*
+  functions.
+
+  For example, ((tf-vflip) [1 2]) = [1 -2]."
+  []
   (fn [k]
     (let [[x y] (validate-key 2 k)]
       (list x (- y)))))
 
 (defn tf-project
+  "Returns a function that projects a coordinate into given dimension.
+
+  For example, ((tf-project 2) [1 2 3 4 5]) = [1 2].
+
+  A project-fn can be passed in to change how a coordinate is projected.
+  By default, the identity function is used."
   ([target-dimension]
    (tf-project target-dimension identity))
   ([target-dimension project-fn]
    (fn [k]
      (take target-dimension (concat (project-fn k) (repeat 0))))))
 
-(defn tf-rotate [radians]
+(defn tf-rotate
+  "Returns a function that rotates a coordinate by given angle in radians."
+  [radians]
   (fn [k]
     (let [[x y] (validate-key 2 k)]
       (list
@@ -244,12 +281,20 @@
        (+ (* x (Math/sin radians))
           (* y (Math/cos radians)))))))
 
-(defn tf-rotate-90-degrees []
+(defn tf-rotate-90-degrees
+  "Returns a function that rotates a coordinate by 90 degrees."
+  []
   (fn [k]
     (let [[x y] (validate-key 2 k)]
       (list (- y) x))))
 
-(defn tf-skew [a b]
+(defn tf-shear
+  "Returns a function that shears a coordinate by given factors.
+
+  See https://en.wikipedia.org/wiki/Shear_mapping.
+
+  For example, ((tf-shear 2 3) [10 5]) = [10 + 2 * 5, 5 + 3 * 10] = [20 35]."
+  [a b]
   (fn [[x y & zs]]
     (concat [(+ x (* a y)) (+ y (* b x))] zs)))
 
