@@ -131,9 +131,9 @@
 
   For example, (right-arrow 4) is '───▶︎'."
   ([n]
-   (right-arrow n \─ "▶︎"))
+   (right-arrow n "─" "▶"))
   ([n body-char]
-   (right-arrow n body-char "▶︎"))
+   (right-arrow n body-char "▶"))
   ([n body-char head-char]
    (hline n body-char body-char head-char)))
 

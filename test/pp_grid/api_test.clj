@@ -48,7 +48,7 @@
   (testing "grid illustration"
     (let [grid (e/make-grid-illustration 4 4)]
       (is (= (:dimension grid) 2))
-      (is (= (:width grid) 41))
+      (is (= (:width grid) 40))
       (is (= (:height grid) 18))
       (is (g/grid? grid))))
   (testing "hello world"
@@ -102,7 +102,7 @@
   (testing "chart-xy"
     (let [grid (e/make-chart-xy)]
       (is (= (:dimension grid) 2))
-      (is (= (:width grid) 18))
+      (is (= (:width grid) 17))
       (is (= (:height grid) 7))
       (is (g/grid? grid))))
   (testing "chart-bar"
