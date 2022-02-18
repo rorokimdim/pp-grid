@@ -101,3 +101,22 @@
         (assoc [0 height] vflipped-abcd)
         (assoc [width height] vflipped-hflipped-abcd)
         (g/transform (g/tf-scale 0.75 0.75)))))
+
+(defn make-diagram []
+  (let [a (-> "a" g/text g/box1)
+        b (-> "b" g/text g/box1)
+        c (-> "c" g/text g/box1)
+        d (-> "d" g/text g/box1)
+        e (-> "e" g/text g/box1)
+
+        abcd (g/transform (make-boxed-abcd) (g/tf-scale 0.75 0.75))
+        chart (g/chart-bar [10 20 30] :max-length 4)
+
+        ra (g/right-arrow 5)
+        c0 (-> (interpose ra [a abcd b])
+               (g/halign 1 0 true)
+               g/box)
+        c1 (-> (interpose ra [d chart e])
+               (g/halign 1 0 true)
+               g/box)]
+    (g/halign (interpose ra [c0 c c1]) 1 0 true)))

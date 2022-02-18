@@ -122,4 +122,10 @@
       (is (= (:dimension grid) 2))
       (is (= (:width grid) 23))
       (is (= (:height grid) 20))
+      (is (g/grid? grid))))
+  (testing "diagram"
+    (let [grid (e/make-diagram)]
+      (is (= (:dimension grid) 2))
+      (is (= (:width grid) 82))
+      (is (= (:height grid) 12))
       (is (g/grid? grid)))))

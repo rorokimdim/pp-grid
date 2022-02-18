@@ -416,6 +416,50 @@ which gives
 +----------+----------+
 ```
 
+## Diagrams
+
+May be. Easy ones can be composed without much pain.
+
+Here is an example. Don't read too much into it :)
+
+```clojure
+(defn make-diagram []
+  (let [a (-> "a" g/text g/box1)
+        b (-> "b" g/text g/box1)
+        c (-> "c" g/text g/box1)
+        d (-> "d" g/text g/box1)
+        e (-> "e" g/text g/box1)
+
+        abcd (g/transform (make-boxed-abcd) (g/tf-scale 0.75 0.75))
+        chart (g/chart-bar [10 20 30] :max-length 4)
+
+        ra (g/right-arrow 5)
+        c0 (-> (interpose ra [a abcd b])
+               (g/halign 1 0 true)
+               g/box)
+        c1 (-> (interpose ra [d chart e])
+               (g/halign 1 0 true)
+               g/box)]
+    (g/halign (interpose ra [c0 c c1]) 1 0 true)))
+```
+
+which gives
+
+```
++--------------------------------+
+|┌─┐       +----------+          |
+|│a│ ────▶ | A      B |          |
+|└─┘       |          |          |                 +-----------------------------+
+|          |          |       ┌─┐|       ┌─┐       |┌─┐       ■■ 10           ┌─┐|
+|          |          | ────▶ │b│| ────▶ │c│ ────▶ |│d│ ────▶ ■■■■ 20   ────▶ │e│|
+|          |    *     |       └─┘|       └─┘       |└─┘       ■■■■■■ 30       └─┘|
+|          |          |          |                 +-----------------------------+
+|          |          |          |
+|          | C      D |          |
+|          +----------+          |
++--------------------------------+
+```
+
 ## Clerk notebooks
 
 For viewing grids in a [clerk](https://github.com/nextjournal/clerk) notebook, we can
