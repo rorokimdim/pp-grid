@@ -111,6 +111,12 @@
       (is (= (:width grid) 46))
       (is (= (:height grid) 5))
       (is (g/grid? grid))))
+  (testing "chart-bar-vertical"
+    (let [grid (e/make-chart-bar-vertical)]
+      (is (= (:dimension grid) 2))
+      (is (= (:width grid) 10))
+      (is (= (:height grid) 16))
+      (is (g/grid? grid))))
   (testing "transformations"
     (let [grid (e/make-transformations)]
       (is (= (:dimension grid) 2))

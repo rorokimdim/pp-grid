@@ -86,6 +86,9 @@
 (defn make-chart-bar []
   (g/chart-bar [20 80 100 200 400]))
 
+(defn make-chart-bar-vertical []
+  (g/chart-bar [100 200 250 360] :horizontal false))
+
 (defn make-transformations []
   (let [abcd (make-boxed-abcd)
         width (:width abcd)

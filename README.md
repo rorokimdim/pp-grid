@@ -337,6 +337,36 @@ which gives
 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 400
 ```
 
+For a vertical bar chart, we can set `:horizontal` to false:
+
+```clojure
+(defn make-chart-bar-vertical []
+  (g/chart-bar [100 200 250 360] :horizontal false))
+
+(make-chart-bar-vertical)
+```
+
+which gives
+
+```
+         █
+         █
+         █
+         █
+      █  █
+      █  █
+   █  █  █
+   █  █  █
+   █  █  █
+   █  █  █
+█  █  █  █
+█  █  █  █
+█  █  █  █
+1  2  2  3
+0  0  5  6
+0  0  0  0
+```
+
 ### Transformations
 
 A grid can be transformed using the `transform` function.
