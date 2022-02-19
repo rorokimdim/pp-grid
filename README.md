@@ -264,6 +264,25 @@ which prints "HELLO" in blue, if our terminal supports ansi-escape-codes. Depend
 on how a repl is configured, we might need to `println` the output of the function to see the
 blue color.
 
+Tables can also be decorated similarly. For example,
+
+```clojure
+(defn make-colored-table []
+  (let [data [{:a 1 :b 2}
+              {:a 10 :b 20}
+              {:a 100 :b 200}
+              {:a 1000 :b 2000}]]
+    (g/table2 [:a :b] data true [g/ESCAPE-CODE-BACKGROUND-GREEN
+                                 g/ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
+                                 g/ESCAPE-CODE-BACKGROUND-BRIGHT-BLUE])))
+
+(make-colored-table)
+```
+
+which will give us a table with header-row colored in green and the rest colored
+in magenta and blue alternately. Again, depending on the repl configuration, we might
+need to `println` the output to see the colors.
+
 ### Trees
 
 ```clojure

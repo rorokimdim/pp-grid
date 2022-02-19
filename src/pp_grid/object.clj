@@ -1,6 +1,7 @@
 (ns pp-grid.object
   (:require [clojure.string :as s]
 
+            [pp-grid.ansi-escape-code :as ecodes]
             [pp-grid.core :as c]
             [pp-grid.layout :as l]))
 
@@ -116,7 +117,7 @@
    (l/valign (repeat h (hfill w c)))))
 
 (defn arrow-left
-  "Constructs a left arroow of given length.
+  "Constructs a left arrow of given length.
 
   For example, (arrow-left 4) is '◀───'."
   ([n]
@@ -427,6 +428,16 @@
   |  1 |  2 |
   |  3 |  4 |
   +----+----+
+
+  row-decorations keyword-argument can be provided. It is a sequence
+  of ansi-escape codes. If header? is true, the header will be decorated with
+  the first ansi-escape code in row-decorations. And the other rows will be decorated
+  with the rest -- if there aren't enough, we'll just cycle over the
+  given ansi-escape-codes. For example, try
+  (table [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]
+         :row-decorations [ESCAPE-CODE-BACKGROUND-BRIGHT-GREEN
+                           ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
+                           ESCAPE-CODE-BACKGROUND-BLUE])
   "
   [ks rows & {:keys [nsew-char
                      nse-char
@@ -439,7 +450,8 @@
                      ne-char
                      se-char
                      sw-char
-                     header?]
+                     header?
+                     row-decorations]
               :or {nsew-char \+
                    nse-char \+
                    nsw-char \+
@@ -471,12 +483,12 @@
                      \newline
                      (for [i (range max-height)
                            :let [cols (->cols i)]]
-                       (str leader (apply
-                                    str
-                                    (interpose divider
-                                               (for [[col fmt] (map vector cols fmts)]
-                                                 (format fmt (str col)))))
-                            trailer)))))
+                       (as-> (interpose
+                              divider
+                              (for [[col fmt] (map vector cols fmts)]
+                                (format fmt (str col)))) $
+                         (apply str $)
+                         (str leader $ trailer))))))
         top-border (text (fmt-row
                           (str se-char ew-char)
                           (str ew-char ews-char ew-char)
@@ -491,21 +503,30 @@
                              (str ne-char ew-char)
                              (str ew-char ewn-char ew-char)
                              (str ew-char nw-char)
-                             (zipmap ks spacers)))]
+                             (zipmap ks spacers)))
+        color-fn (fn [i]
+                   (cond
+                     (nil? row-decorations) nil
+                     header? (nth (cons (first row-decorations)
+                                        (cycle (rest row-decorations))) i nil)
+                     :else (nth (cycle row-decorations) i nil)))
+        reset (when (seq row-decorations)
+                ecodes/ESCAPE-CODE-RESET)]
     (l/valign [top-border
                (when header?
                  (text (fmt-row
-                        (str ns-char \space)
-                        (str \space ns-char \space)
-                        (str \space ns-char)
+                        (str ns-char (color-fn 0) \space)
+                        (str \space reset ns-char (color-fn 0) \space)
+                        (str \space reset ns-char)
                         (zipmap ks ks))))
                (when header? header-divider)
-               (l/valign (map (fn [row]
-                                (text (fmt-row (str ns-char \space)
-                                               (str \space ns-char \space)
-                                               (str \space ns-char)
+               (l/valign (map (fn [row i]
+                                (text (fmt-row (str ns-char (color-fn (inc i)) \space)
+                                               (str \space reset ns-char (color-fn (inc i)) \space)
+                                               (str \space reset ns-char)
                                                row)))
-                              rows))
+                              rows
+                              (range)))
                bottom-border])))
 
 (defn table0
@@ -517,10 +538,14 @@
 
      1    2
      3    4
-  "
+
+  Rows can be decorated with row-decorations argument, which is a sequence of ansi-escape-codes.
+  Please see docstring for table."
   ([ks rows]
    (table0 ks rows true))
   ([ks rows header?]
+   (table0 ks rows header? nil))
+  ([ks rows header? row-decorations]
    (table ks rows
           :nsew-char " "
           :nse-char " "
@@ -533,7 +558,8 @@
           :sw-char " "
           :ne-char " "
           :nw-char " "
-          :header? header?)))
+          :header? header?
+          :row-decorations row-decorations)))
 
 (defn table1
   "Constructs a table.
@@ -547,10 +573,14 @@
   │  1 │  2 │
   │  3 │  4 │
   └────┴────┘
-  "
+
+  Rows can be decorated with row-decorations argument, which is a sequence of ansi-escape-codes.
+  Please see docstring for table."
   ([ks rows]
    (table1 ks rows true))
   ([ks rows header?]
+   (table1 ks rows header? nil))
+  ([ks rows header? row-decorations]
    (table ks rows
           :nsew-char "┼"
           :nse-char "├"
@@ -563,7 +593,8 @@
           :sw-char "┐"
           :ne-char "└"
           :nw-char "┘"
-          :header? header?)))
+          :header? header?
+          :row-decorations row-decorations)))
 
 (defn table2
   "Constructs a table.
@@ -577,10 +608,14 @@
   │  1 │  2 │
   │  3 │  4 │
   ╰────┴────╯
-  "
+
+  Rows can be decorated with row-decorations argument, which is a sequence of ansi-escape-codes.
+  Please see docstring for table."
   ([ks rows]
    (table2 ks rows true))
   ([ks rows header?]
+   (table2 ks rows header? nil))
+  ([ks rows header? row-decorations]
    (table ks rows
           :nsew-char "┼"
           :nse-char "├"
@@ -593,7 +628,8 @@
           :sw-char "╮"
           :ne-char "╰"
           :nw-char "╯"
-          :header? header?)))
+          :header? header?
+          :row-decorations row-decorations)))
 
 (defn table3
   "Constructs a table.
@@ -607,10 +643,14 @@
   :  1 :  2 :
   :  3 :  4 :
   :....:....:
-  "
+
+  Rows can be decorated with row-decorations argument, which is a sequence of ansi-escape-codes.
+  Please see docstring for table."
   ([ks rows]
    (table3 ks rows true))
   ([ks rows header?]
+   (table3 ks rows header? nil))
+  ([ks rows header? row-decorations]
    (table ks rows
           :nsew-char "."
           :nse-char "."
@@ -623,7 +663,8 @@
           :sw-char "."
           :ne-char ":"
           :nw-char ":"
-          :header? header?)))
+          :header? header?
+          :row-decorations row-decorations)))
 
 (defn matrix
   "Constructs a matrix.

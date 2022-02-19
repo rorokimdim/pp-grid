@@ -116,11 +116,17 @@
       (is (= (:width grid) 13))
       (is (= (:height grid) 30))
       (is (g/grid? grid))))
-  (testing "nested-tables"
+  (testing "nested-table"
     (let [grid (e/make-nested-table)]
       (is (= (:dimension grid) 2))
       (is (= (:width grid) 74))
       (is (= (:height grid) 17))
+      (is (g/grid? grid))))
+  (testing "colored-table"
+    (let [grid (e/make-colored-table)]
+      (is (= (:dimension grid) 2))
+      (is (= (:width grid) 37))
+      (is (= (:height grid) 8))
       (is (g/grid? grid))))
   (testing "decorated text"
     (let [grid (e/make-decorated-text "HELLO")]

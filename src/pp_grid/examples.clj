@@ -72,6 +72,15 @@
                 :c abcd
                 :t1 t1}])))
 
+(defn make-colored-table []
+  (let [data [{:a 1 :b 2}
+              {:a 10 :b 20}
+              {:a 100 :b 200}
+              {:a 1000 :b 2000}]]
+    (g/table2 [:a :b] data true [g/ESCAPE-CODE-BACKGROUND-GREEN
+                                 g/ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
+                                 g/ESCAPE-CODE-BACKGROUND-BRIGHT-BLUE])))
+
 (defn make-decorated-text [s]
   (-> s
       g/text
