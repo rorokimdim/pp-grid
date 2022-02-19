@@ -19,6 +19,41 @@
       (is (nil? (:mins grid)))
       (is (nil? (:maxs grid))))))
 
+(deftest test-width
+  (testing "string-widths"
+    (is (= 0 (g/width "")))
+    (is (= 0 (g/width "\n123")))
+    (is (= 1 (g/width "1")))
+    (is (= 1 (g/width "1\n1234")))
+    (is (= 4 (g/width "abcd\nefgh"))))
+  (testing "string-convertible-widths"
+    (is (= 1 (g/width 1)))
+    (is (= 4 (g/width 1234)))
+    (is (= 7 (g/width 1234.26)))
+    (is (= 2 (g/width :a)))
+    (is (= 5 (g/width :abcd))))
+  (testing "grid-widths"
+    (is (= 0 (g/width (g/empty-grid))))
+    (is (= 5 (g/width (g/text "HELLO"))))))
+
+(deftest test-height
+  (testing "string-heights"
+    (is (= 1 (g/height "")))
+    (is (= 2 (g/height "\n123")))
+    (is (= 1 (g/height "1")))
+    (is (= 2 (g/height "1\n1234")))
+    (is (= 2 (g/height "abcd\nefgh"))))
+  (testing "string-convertible-heights"
+    (is (= 1 (g/height 1)))
+    (is (= 1 (g/height 1234)))
+    (is (= 1 (g/height 1234.26)))
+    (is (= 1 (g/height :a)))
+    (is (= 1 (g/height :abcd))))
+  (testing "grid-heights"
+    (is (= 0 (g/height (g/empty-grid))))
+    (is (= 1 (g/height (g/text "HELLO"))))
+    (is (= 4 (g/height (g/text "HELLO\nWorld\nof\ntesting"))))))
+
 (deftest test-grid-2d
   (testing "2d grid"
     (let [grid (-> (g/empty-grid 2)
