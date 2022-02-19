@@ -276,7 +276,7 @@
     (c/tf-hflip))))
 
 (defn box
-  "Constructs a grid wrapping given grid into a box.
+  "Constructs a grid wrapping given grid (or a string-convertible value) into a box.
 
   For example, (box (text \"HELLO\")) is
   +-----+
@@ -306,17 +306,20 @@
              top-left-corner-char \+
              top-right-corner-char \+
              bottom-left-corner-char \+
-             bottom-right-corner-char \+}}]
-  (let [width (+ (:width g) left-padding right-padding)
-        height (+ (:height g) top-padding bottom-padding 2)]
-    (l/halign
-     [(vline height left-border-char top-left-corner-char bottom-left-corner-char)
-      (l/valign [(hline width top-border-char)
-                 (vfill top-padding \space)
-                 (l/halign [(hfill left-padding) g (hfill right-padding)])
-                 (vfill bottom-padding \space)
-                 (hline width bottom-border-char)])
-      (vline height right-border-char top-right-corner-char bottom-right-corner-char)])))
+             bottom-right-corner-char \+}
+        :as opts}]
+  (if (c/grid? g)
+    (let [width (+ (:width g) left-padding right-padding)
+          height (+ (:height g) top-padding bottom-padding 2)]
+      (l/halign
+       [(vline height left-border-char top-left-corner-char bottom-left-corner-char)
+        (l/valign [(hline width top-border-char)
+                   (vfill top-padding \space)
+                   (l/halign [(hfill left-padding) g (hfill right-padding)])
+                   (vfill bottom-padding \space)
+                   (hline width bottom-border-char)])
+        (vline height right-border-char top-right-corner-char bottom-right-corner-char)]))
+    (apply box (text (str g)) (apply concat opts))))
 
 (defn box1
   "Constructs a grid wrapping given grid into a box.

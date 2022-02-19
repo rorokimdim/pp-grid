@@ -139,9 +139,9 @@ which gives
 
 ```clojure
 (defn make-haligned-boxes []
-  (let [a (g/box (g/text "AB"))
-        b (g/box1 (g/text "CD"))
-        c (g/box2 (g/text "EF"))]
+  (let [a (g/box "AB")
+        b (g/box1 "CD")
+        c (g/box2 "EF" :left-padding 2 :right-padding 2)]
     (g/halign [a b c] 1 0)))
 
 (make-haligned-boxes)
@@ -150,9 +150,9 @@ which gives
 which gives
 
 ```
-+--+ ┌──┐ ╒══╕
-|AB| │CD│ │EF│
-+--+ └──┘ ╘══╛
++--+ ┌──┐ ╒══════╕
+|AB| │CD│ │  EF  │
++--+ └──┘ ╘══════╛
 ```
 
 ### Tables
@@ -443,10 +443,10 @@ Here is an example. Don't read too much into it :)
 
 ```clojure
 (defn make-diagram []
-  (let [a (-> "a" g/text g/box1)
-        b (-> "b" g/text g/box1)
-        c (-> "c" g/text g/box1)
-        d (-> "d" g/text g/box1)
+  (let [a (g/box1 "a")
+        b (g/box1 "b")
+        c (g/box1 "c")
+        d (g/box1 "d")
 
         abcd (g/transform (make-boxed-abcd) (g/tf-scale 0.75 0.75))
         chart (g/chart-bar [10 20 30] :max-length 4)
@@ -462,6 +462,8 @@ Here is an example. Don't read too much into it :)
                (assoc [0 0] (g/arrow-se 3 "\\" "*" "f"))
                (g/pull 0 2))]
     (g/halign (interpose ra [c0 c c1 c2]) 1 0 true)))
+
+(make-diagram)
 ```
 
 which gives
