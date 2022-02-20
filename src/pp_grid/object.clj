@@ -312,7 +312,9 @@
     (let [origin-x (:min-x g)
           origin-y (:min-y g)
           move-to-origin (fn [o]
-                           (c/transform o (c/tf-translate origin-x origin-y)))
+                           (if (and (zero? origin-x) (zero? origin-y))
+                             o
+                             (c/transform o (c/tf-translate origin-x origin-y))))
           width (+ (:width g) left-padding right-padding)
           height (+ (:height g) top-padding bottom-padding 2)
           left-line (vline height left-border-char top-left-corner-char bottom-left-corner-char)
@@ -831,3 +833,19 @@
         (assoc flipped-chart
                [0 0]
                (l/halign text-labels 2 0))))))
+
+(defn decorate
+  "Decorates a grid or a string-convertible value with given ansi-escape-codes."
+  [x escape-code & escape-codes]
+  (if (c/grid? x)
+    (reduce
+     (fn [acc [k v]]
+       (let [escape-code (apply str escape-code escape-codes)
+             new-v (if (c/escaped-char? v)
+                     (c/->EscapedChar (apply str escape-code (:escape-code v))
+                                      (:value v))
+                     (c/->EscapedChar escape-code v))]
+         (assoc acc k new-v)))
+     (empty x)
+     x)
+    (apply decorate (text x) escape-code escape-codes)))

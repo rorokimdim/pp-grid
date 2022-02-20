@@ -10,7 +10,6 @@
  [pp-grid.core
 
   add
-  decorate
   empty-grid
   grid?
   height
@@ -61,23 +60,22 @@
   box
   box1
   box2
+  chart-bar
+  chart-xy
+  decorate
   fill
   hfill
   hline
-  text
-  tree
-  vfill
-  vline
-
+  matrix
   table
   table0
   table1
   table2
   table3
-  matrix
-
-  chart-bar
-  chart-xy]
+  text
+  tree
+  vfill
+  vline]
 
  [pp-grid.ansi-escape-code
 
