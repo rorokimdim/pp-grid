@@ -30,7 +30,8 @@
            (c/add top (c/transform bottom (c/tf-translate dx dy)))
            (drop 2 grids))
           x-padding
-          y-padding))))))
+          y-padding
+          center?))))))
 
 (defn halign
   "Constructs a grid containing given grids aligned horizontally.
