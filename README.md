@@ -4,6 +4,8 @@
 [![cljdoc badge](https://cljdoc.org/badge/org.clojars.rorokimdim/pp-grid)](https://cljdoc.org/d/org.clojars.rorokimdim/pp-grid)
 [![CircleCI](https://circleci.com/gh/rorokimdim/pp-grid/tree/master.svg?style=svg)](https://circleci.com/gh/rorokimdim/pp-grid/tree/master)
 
+`Note: Alpha status. Each new version might have breaking changes.`
+
 pp-grid is a clojure library to easily construct formatted text.
 
 It provides a grid data-structure (a `map`) and some primitive functions
@@ -68,6 +70,9 @@ There are many functions available to make writing to a grid easier. For example
 ```
 
 ## Examples
+
+All the examples assume we are using the latest version. Some examples
+build up on earlier examples.
 
 To try these examples in a repl, require pp-grid as follows.
 
