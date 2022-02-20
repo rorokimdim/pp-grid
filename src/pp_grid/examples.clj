@@ -15,7 +15,7 @@
                 0
                 (g/arrow-down (+ (:height cells) 2) \|)
                 (g/text "y"))]
-    (g/halign [y-axis (g/valign [x-axis cells])] 0 0)))
+    (g/halign [y-axis (g/valign [x-axis cells])] 0)))
 
 (defn make-hello-world []
   (-> (g/empty-grid)
@@ -47,7 +47,7 @@
   (let [a (g/box "AB")
         b (g/box1 "CD")
         c (g/box2 "EF" :left-padding 2 :right-padding 2)]
-    (g/halign [a b c] 1 0)))
+    (g/halign [a b c] 1)))
 
 (defn make-tables []
   (let [data [{:a 1 :b 2 :c 3}
@@ -122,11 +122,11 @@
 
         ra (g/arrow-right 5)
         c0 (-> (interpose ra [a abcd b])
-               (g/halign 1 0 true)
+               (g/halign 1 true)
                g/box)
         c1 (-> (interpose ra [d chart])
-               (g/halign 1 0 true)
+               (g/halign 1 true)
                g/box)
         c2 (-> (g/arrow-ne 3 "/" "*" "e")
                (assoc [0 0] (g/arrow-se 3 "\\" "*" "f")))]
-    (g/halign (interpose ra [c0 c c1 c2]) 1 0 true)))
+    (g/halign (interpose ra [c0 c c1 c2]) 1 true)))

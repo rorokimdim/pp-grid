@@ -745,11 +745,11 @@
                                          branch-marker)
                               children (for [n node]
                                          (if (sequential? n)
-                                           (l/halign (map #(apply tree % args) n) x-padding 0)
+                                           (l/halign (map #(apply tree % args) n) x-padding)
                                            (apply tree n args)))]
                           (as-> children $
                             (interpose (text (str branch-marker)) $)
-                            (l/valign $ 0 y-padding)))
+                            (l/valign $ y-padding)))
      (c/grid? node) node
      :else (text-wrapper-fn (text (str node)) :left-padding 1 :right-padding 1))))
 
@@ -828,11 +828,11 @@
       (l/valign (for [[n text-label] (map vector scaled-ns text-labels)]
                   (l/=== 1 (hline n bar-symbol) text-label)))
       (let [chart (l/halign (for [n scaled-ns]
-                              (or (vline n bar-symbol) (text ""))) 2 0)
+                              (or (vline n bar-symbol) (text ""))) 2)
             flipped-chart (c/transform chart (c/tf-vflip))]
         (assoc flipped-chart
                [0 0]
-               (l/halign text-labels 2 0))))))
+               (l/halign text-labels 2))))))
 
 (defn decorate
   "Decorates a grid or a string-convertible value with given ansi-escape-codes."
