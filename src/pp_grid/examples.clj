@@ -128,6 +128,5 @@
                (g/halign 1 0 true)
                g/box)
         c2 (-> (g/arrow-ne 3 "/" "*" "e")
-               (assoc [0 0] (g/arrow-se 3 "\\" "*" "f"))
-               (g/pull 0 2))]
+               (assoc [0 0] (g/arrow-se 3 "\\" "*" "f")))]
     (g/halign (interpose ra [c0 c c1 c2]) 1 0 true)))

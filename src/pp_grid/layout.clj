@@ -18,8 +18,12 @@
      (if (<= (count grids) 1)
        (first grids)
        (let [[top bottom] (take 2 grids)
-             x-diff (- (:width top) (:width bottom))
-             dx (+ x-padding (if center? (max (quot x-diff 2) 0) 0))
+             top-width (:width top)
+             bottom-width (:width bottom)
+             top-center-x (+ (:min-x top) (/ top-width 2))
+             bottom-center-x (+ (:min-x bottom) (/ bottom-width 2))
+             x-diff (- top-center-x bottom-center-x)
+             dx (+ x-padding (if center? x-diff 0))
              dy (+ y-padding (:height top))]
          (valign
           (cons
@@ -42,8 +46,12 @@
        (first grids)
        (let [[left right] (take 2 grids)
              dx (+ x-padding (:width left))
-             y-diff (- (:height left) (:height right))
-             dy (+ y-padding (if center? (max (quot y-diff 2) 0) 0))]
+             left-height (:height left)
+             right-height (:height right)
+             left-center-y (+ (:min-y left) (/ left-height 2))
+             right-center-y (+ (:min-y right) (/ right-height 2))
+             y-diff (- left-center-y right-center-y)
+             dy (+ y-padding (if center? y-diff 0))]
          (halign
           (cons
            (c/add left (c/transform right (c/tf-translate dx dy)))
