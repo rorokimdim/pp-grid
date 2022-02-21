@@ -35,6 +35,22 @@
            (c/empty-grid)))
      (text (str s) pad-left pad-right pad-char))))
 
+(defn decorate
+  "Decorates a grid or a string-convertible value with given ansi-escape-codes."
+  [x escape-code & escape-codes]
+  (if (c/grid? x)
+    (reduce
+     (fn [acc [k v]]
+       (let [escape-code (apply str escape-code escape-codes)
+             new-v (if (c/escaped-char? v)
+                     (c/->EscapedChar (apply str escape-code (:escape-code v))
+                                      (:value v))
+                     (c/->EscapedChar escape-code v))]
+         (assoc acc k new-v)))
+     (empty x)
+     x)
+    (apply decorate (text x) escape-code escape-codes)))
+
 (defn hline
   "Constructs a horizontal line of given length.
 
@@ -294,7 +310,8 @@
                top-left-corner-char
                top-right-corner-char
                bottom-left-corner-char
-               bottom-right-corner-char]
+               bottom-right-corner-char
+               fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
@@ -323,16 +340,72 @@
                             top-right-corner-char
                             bottom-right-corner-char)
           top-line (hline width top-border-char)
-          bottom-line (hline width bottom-border-char)]
+          bottom-line (hline width bottom-border-char)
+          filled-box (fill (+ (:width g) left-padding right-padding)
+                           (+ (:height g) top-padding bottom-padding)
+                           \space)
+          content (l/valign [(vfill top-padding \space)
+                             (l/halign [(hfill left-padding) g (hfill right-padding)])
+                             (vfill bottom-padding \space)])
+          filled-content (if (nil? fill-escape-codes)
+                           content
+                           (apply decorate (assoc filled-box [0 0] content)
+                                  fill-escape-codes))]
       (l/halign
        [(move-to-origin left-line)
         (l/valign [(move-to-origin top-line)
-                   (vfill top-padding \space)
-                   (l/halign [(hfill left-padding) g (hfill right-padding)])
-                   (vfill bottom-padding \space)
+                   filled-content
                    (move-to-origin bottom-line)])
         (move-to-origin right-line)]))
     (apply box (text (str g)) (apply concat opts))))
+
+(defn box0
+  "Constructs a grid wrapping given grid into a border-less box.
+
+  For example, (box0 (text \"HELLO\")) is
+
+   HELLO
+
+  "
+  [g & {:keys [left-padding
+               right-padding
+               top-padding
+               bottom-padding
+               left-border-char
+               right-border-char
+               top-border-char
+               bottom-border-char
+               top-left-corner-char
+               top-right-corner-char
+               bottom-left-corner-char
+               bottom-right-corner-char
+               fill-escape-codes]
+        :or {left-padding 0
+             right-padding 0
+             top-padding 0
+             bottom-padding 0
+             left-border-char \space
+             right-border-char \space
+             top-border-char \space
+             bottom-border-char \space
+             top-left-corner-char \space
+             top-right-corner-char \space
+             bottom-left-corner-char \space
+             bottom-right-corner-char \space}}]
+  (box g
+       :left-padding left-padding
+       :right-padding right-padding
+       :top-padding top-padding
+       :bottom-padding bottom-padding
+       :left-border-char left-border-char
+       :right-border-char right-border-char
+       :top-border-char top-border-char
+       :bottom-border-char bottom-border-char
+       :top-left-corner-char top-left-corner-char
+       :top-right-corner-char top-right-corner-char
+       :bottom-left-corner-char bottom-left-corner-char
+       :bottom-right-corner-char bottom-right-corner-char
+       :fill-escape-codes fill-escape-codes))
 
 (defn box1
   "Constructs a grid wrapping given grid into a box.
@@ -355,7 +428,8 @@
                top-left-corner-char
                top-right-corner-char
                bottom-left-corner-char
-               bottom-right-corner-char]
+               bottom-right-corner-char
+               fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
@@ -380,7 +454,8 @@
        :top-left-corner-char top-left-corner-char
        :top-right-corner-char top-right-corner-char
        :bottom-left-corner-char bottom-left-corner-char
-       :bottom-right-corner-char bottom-right-corner-char))
+       :bottom-right-corner-char bottom-right-corner-char
+       :fill-escape-codes fill-escape-codes))
 
 (defn box2
   "Constructs a grid wrapping given grid into a box.
@@ -403,7 +478,8 @@
                top-left-corner-char
                top-right-corner-char
                bottom-left-corner-char
-               bottom-right-corner-char]
+               bottom-right-corner-char
+               fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
@@ -428,7 +504,8 @@
        :top-left-corner-char top-left-corner-char
        :top-right-corner-char top-right-corner-char
        :bottom-left-corner-char bottom-left-corner-char
-       :bottom-right-corner-char bottom-right-corner-char))
+       :bottom-right-corner-char bottom-right-corner-char
+       :fill-escape-codes fill-escape-codes))
 
 (defn table
   "Constructs a table.
@@ -833,19 +910,3 @@
         (assoc flipped-chart
                [0 0]
                (l/halign text-labels 2))))))
-
-(defn decorate
-  "Decorates a grid or a string-convertible value with given ansi-escape-codes."
-  [x escape-code & escape-codes]
-  (if (c/grid? x)
-    (reduce
-     (fn [acc [k v]]
-       (let [escape-code (apply str escape-code escape-codes)
-             new-v (if (c/escaped-char? v)
-                     (c/->EscapedChar (apply str escape-code (:escape-code v))
-                                      (:value v))
-                     (c/->EscapedChar escape-code v))]
-         (assoc acc k new-v)))
-     (empty x)
-     x)
-    (apply decorate (text x) escape-code escape-codes)))

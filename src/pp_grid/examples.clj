@@ -81,6 +81,27 @@
                                  g/ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
                                  g/ESCAPE-CODE-BACKGROUND-BRIGHT-BLUE])))
 
+(defn make-colored-boxes []
+  (let [abcd (make-abcd)
+        b0 (g/box1
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BACKGROUND-BLUE])
+        b1 (g/box1
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BOLD
+                                g/ESCAPE-CODE-RED])
+        b2 (g/box0
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BOLD
+                                g/ESCAPE-CODE-BRIGHT-GREEN
+                                g/ESCAPE-CODE-BACKGROUND-BRIGHT-WHITE])
+        b3 (g/box2
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BOLD
+                                g/ESCAPE-CODE-RED
+                                g/ESCAPE-CODE-UNDERLINE])]
+    (g/halign [b0 b1 b2 b3])))
+
 (defn make-decorated-text [s]
   (-> s
       g/text

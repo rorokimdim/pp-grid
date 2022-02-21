@@ -58,6 +58,7 @@
   arrow-up
   arrow-up-down
   box
+  box0
   box1
   box2
   chart-bar

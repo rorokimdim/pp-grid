@@ -128,6 +128,12 @@
       (is (= (:width grid) 37))
       (is (= (:height grid) 8))
       (is (g/grid? grid))))
+  (testing "colored-boxes"
+    (let [grid (e/make-colored-boxes)]
+      (is (= (:dimension grid) 2))
+      (is (= (:width grid) 52))
+      (is (= (:height grid) 13))
+      (is (g/grid? grid))))
   (testing "decorated text"
     (let [grid (e/make-decorated-text "HELLO")]
       (is (= (:dimension grid) 2))
