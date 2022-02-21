@@ -5,28 +5,6 @@
 
 `Note: Alpha status. Each new version might have breaking changes.`
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
-
-- [pp-grid](#pp-grid)
-    - [Examples](#examples)
-        - [ABCD](#abcd)
-        - [Boxed ABCD](#boxed-abcd)
-        - [Horizontally aligned boxes](#horizontally-aligned-boxes)
-        - [Tables](#tables)
-        - [Decorated text](#decorated-text)
-        - [Trees](#trees)
-        - [XY Chart](#xy-chart)
-        - [Bar Chart](#bar-chart)
-        - [Transformations](#transformations)
-        - [Diagrams](#diagrams)
-    - [Clerk notebooks](#clerk-notebooks)
-    - [Credits](#credits)
-    - [License](#license)
-
-<!-- markdown-toc end -->
-
-
 # pp-grid
 
 pp-grid is a clojure library to easily construct formatted text.
