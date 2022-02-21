@@ -113,8 +113,8 @@
   (testing "tables"
     (let [grid (e/make-tables)]
       (is (= (:dimension grid) 2))
-      (is (= (:width grid) 13))
-      (is (= (:height grid) 30))
+      (is (= (:width grid) 50))
+      (is (= (:height grid) 41))
       (is (g/grid? grid))))
   (testing "nested-table"
     (let [grid (e/make-nested-table)]
@@ -131,7 +131,7 @@
   (testing "colored-boxes"
     (let [grid (e/make-colored-boxes)]
       (is (= (:dimension grid) 2))
-      (is (= (:width grid) 52))
+      (is (= (:width grid) 50))
       (is (= (:height grid) 13))
       (is (g/grid? grid))))
   (testing "decorated text"

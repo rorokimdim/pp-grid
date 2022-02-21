@@ -56,8 +56,9 @@
         t1 (g/table1 [:a :b] data)
         t2 (g/table2 [:a :b] data)
         t3 (g/table3 [:a :b] data)
-        matrix (g/matrix [:a :b] data)]
-    (g/valign [t0 t1 t2 t3 matrix])))
+        matrix (g/matrix [:a :b] data)
+        alphabets (g/table* (map #(g/box1 (char %)) (range 65 91)) 10)]
+    (g/valign [t0 t1 t2 t3 matrix alphabets])))
 
 (defn make-nested-table []
   (let [data [{:a 1 :b 2 :c 3 :d 4 :e 5}

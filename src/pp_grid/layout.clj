@@ -14,7 +14,7 @@
   ([grids y-padding]
    (valign grids y-padding false))
   ([grids y-padding center?]
-   (let [grids (remove nil? grids)]
+   (let [grids (remove empty? grids)]
      (if (<= (count grids) 1)
        (first grids)
        (let [[top bottom] (take 2 grids)
@@ -41,7 +41,7 @@
   ([grids x-padding]
    (halign grids x-padding false))
   ([grids x-padding center?]
-   (let [grids (remove nil? grids)]
+   (let [grids (remove empty? grids)]
      (if (<= (count grids) 1)
        (first grids)
        (let [[left right] (take 2 grids)

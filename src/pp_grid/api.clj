@@ -69,6 +69,7 @@
   hline
   matrix
   table
+  table*
   table0
   table1
   table2

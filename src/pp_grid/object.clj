@@ -341,16 +341,16 @@
                             bottom-right-corner-char)
           top-line (hline width top-border-char)
           bottom-line (hline width bottom-border-char)
-          filled-box (fill (+ (:width g) left-padding right-padding)
-                           (+ (:height g) top-padding bottom-padding)
-                           \space)
           content (l/valign [(vfill top-padding \space)
                              (l/halign [(hfill left-padding) g (hfill right-padding)])
                              (vfill bottom-padding \space)])
           filled-content (if (nil? fill-escape-codes)
                            content
-                           (apply decorate (assoc filled-box [0 0] content)
-                                  fill-escape-codes))]
+                           (let [filled-box (fill (+ (:width g) left-padding right-padding)
+                                                  (+ (:height g) top-padding bottom-padding)
+                                                  \space)]
+                             (apply decorate (assoc filled-box [0 0] content)
+                                    fill-escape-codes)))]
       (l/halign
        [(move-to-origin left-line)
         (l/valign [(move-to-origin top-line)
@@ -384,14 +384,14 @@
              right-padding 0
              top-padding 0
              bottom-padding 0
-             left-border-char \space
-             right-border-char \space
-             top-border-char \space
-             bottom-border-char \space
-             top-left-corner-char \space
-             top-right-corner-char \space
-             bottom-left-corner-char \space
-             bottom-right-corner-char \space}}]
+             left-border-char ""
+             right-border-char ""
+             top-border-char ""
+             bottom-border-char ""
+             top-left-corner-char ""
+             top-right-corner-char ""
+             bottom-left-corner-char ""
+             bottom-right-corner-char ""}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
@@ -627,10 +627,10 @@
 
   For example, (table0 [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]) is
 
-    :a   :b
+   :a   :b
 
-     1    2
-     3    4
+    1    2
+    3    4
 
   Rows can be decorated with row-decorations argument, which is a sequence of ansi-escape-codes.
   Please see docstring for table."
@@ -640,17 +640,17 @@
    (table0 ks rows header? nil))
   ([ks rows header? row-decorations]
    (table ks rows
-          :nsew-char " "
-          :nse-char " "
-          :nsw-char " "
-          :ewn-char " "
-          :ews-char " "
-          :ns-char " "
-          :ew-char " "
-          :se-char " "
-          :sw-char " "
-          :ne-char " "
-          :nw-char " "
+          :nsew-char ""
+          :nse-char ""
+          :nsw-char ""
+          :ewn-char ""
+          :ews-char ""
+          :ns-char ""
+          :ew-char ""
+          :se-char ""
+          :sw-char ""
+          :ne-char ""
+          :nw-char ""
           :header? header?
           :row-decorations row-decorations)))
 
@@ -758,6 +758,18 @@
           :nw-char ":"
           :header? header?
           :row-decorations row-decorations)))
+
+(defn table*
+  "Constructs a n-column, border-less, header-less table with given grids.
+
+  Just a convenience wrapper around table0. For more customization, use
+  table0 or table functions.
+  "
+  ([grids n]
+   (let [ks (range n)
+         rows (for [r (partition n n nil grids)]
+                (zipmap ks r))]
+     (table0 ks rows false))))
 
 (defn matrix
   "Constructs a matrix.

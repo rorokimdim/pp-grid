@@ -5,6 +5,28 @@
 
 `Note: Alpha status. Each new version might have breaking changes.`
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [pp-grid](#pp-grid)
+    - [Examples](#examples)
+        - [ABCD](#abcd)
+        - [Boxed ABCD](#boxed-abcd)
+        - [Horizontally aligned boxes](#horizontally-aligned-boxes)
+        - [Tables](#tables)
+        - [Decorated text](#decorated-text)
+        - [Trees](#trees)
+        - [XY Chart](#xy-chart)
+        - [Bar Chart](#bar-chart)
+        - [Transformations](#transformations)
+        - [Diagrams](#diagrams)
+    - [Clerk notebooks](#clerk-notebooks)
+    - [Credits](#credits)
+    - [License](#license)
+
+<!-- markdown-toc end -->
+
+
 # pp-grid
 
 pp-grid is a clojure library to easily construct formatted text.
@@ -171,8 +193,9 @@ which gives
         t1 (g/table1 [:a :b] data)
         t2 (g/table2 [:a :b] data)
         t3 (g/table3 [:a :b] data)
-        matrix (g/matrix [:a :b] data)]
-    (g/valign [t0 t1 t2 t3 matrix])))
+        matrix (g/matrix [:a :b] data)
+        alphabets (g/table* (map #(g/box1 (char %)) (range 65 91)) 10)]
+    (g/valign [t0 t1 t2 t3 matrix alphabets])))
 
 (make-tables)
 ```
@@ -204,12 +227,22 @@ which gives
 :  1 :  2 :
 : 10 : 20 :
 :....:....:
-╭           ╮
-│  :a   :b  │
-│           │
-│   1    2  │
-│  10   20  │
-╰           ╯
+╭        ╮
+│ :a  :b │
+│        │
+│  1   2 │
+│ 10  20 │
+╰        ╯
+
+ ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐
+ │A│  │B│  │C│  │D│  │E│  │F│  │G│  │H│  │I│  │J│
+ └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘
+ ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐
+ │K│  │L│  │M│  │N│  │O│  │P│  │Q│  │R│  │S│  │T│
+ └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘  └─┘
+ ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐  ┌─┐
+ │U│  │V│  │W│  │X│  │Y│  │Z│
+ └─┘  └─┘  └─┘  └─┘  └─┘  └─┘
 ```
 
 We can also put another table (or a grid) inside a table.
@@ -288,6 +321,33 @@ Tables can also be decorated by passing in a sequence of ansi-escape-codes. For 
 which will give us a table with header-row colored in green and the rest colored
 in magenta and blue alternately. Again, depending on the repl configuration, we might
 need to `println` the output to see the colors.
+
+Boxes can be decorated by passing in `:fill-escape-codes` option.
+
+```clojure
+(defn make-colored-boxes []
+  (let [abcd (make-abcd)
+        b0 (g/box1
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BACKGROUND-BLUE])
+        b1 (g/box1
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BOLD
+                                g/ESCAPE-CODE-RED])
+        b2 (g/box0
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BOLD
+                                g/ESCAPE-CODE-BRIGHT-GREEN
+                                g/ESCAPE-CODE-BACKGROUND-BRIGHT-WHITE])
+        b3 (g/box2
+            abcd
+            :fill-escape-codes [g/ESCAPE-CODE-BOLD
+                                g/ESCAPE-CODE-RED
+                                g/ESCAPE-CODE-UNDERLINE])]
+    (g/halign [b0 b1 b2 b3])))
+
+(make-colored-boxes)
+```
 
 ### Trees
 
