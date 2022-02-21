@@ -460,9 +460,59 @@
 (defn box2
   "Constructs a grid wrapping given grid into a box.
 
-  Similar to box, but uses different border.
+  Similar to box, but uses border with rounded corners.
 
   For example, (box2 (text \"HELLO\")) is
+  ╭─────╮
+  │HELLO│
+  ╰─────╯
+  "
+  [g & {:keys [left-padding
+               right-padding
+               top-padding
+               bottom-padding
+               left-border-char
+               right-border-char
+               top-border-char
+               bottom-border-char
+               top-left-corner-char
+               top-right-corner-char
+               bottom-left-corner-char
+               bottom-right-corner-char
+               fill-escape-codes]
+        :or {left-padding 0
+             right-padding 0
+             top-padding 0
+             bottom-padding 0
+             left-border-char "│"
+             right-border-char "│"
+             top-border-char "─"
+             bottom-border-char "─"
+             top-left-corner-char "╭"
+             top-right-corner-char "╮"
+             bottom-left-corner-char "╰"
+             bottom-right-corner-char "╯"}}]
+  (box g
+       :left-padding left-padding
+       :right-padding right-padding
+       :top-padding top-padding
+       :bottom-padding bottom-padding
+       :left-border-char left-border-char
+       :right-border-char right-border-char
+       :top-border-char top-border-char
+       :bottom-border-char bottom-border-char
+       :top-left-corner-char top-left-corner-char
+       :top-right-corner-char top-right-corner-char
+       :bottom-left-corner-char bottom-left-corner-char
+       :bottom-right-corner-char bottom-right-corner-char
+       :fill-escape-codes fill-escape-codes))
+
+(defn box3
+  "Constructs a grid wrapping given grid into a box.
+
+  Similar to box, but uses different border.
+
+  For example, (box3 (text \"HELLO\")) is
   ╒═════╕
   │HELLO│
   ╘═════╛

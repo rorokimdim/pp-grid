@@ -61,6 +61,7 @@
   box0
   box1
   box2
+  box3
   chart-bar
   chart-xy
   decorate

@@ -147,8 +147,9 @@ which gives
 (defn make-haligned-boxes []
   (let [a (g/box "AB")
         b (g/box1 "CD")
-        c (g/box2 "EF" :left-padding 2 :right-padding 2)]
-    (g/halign [a b c] 1)))
+        c (g/box2 "EF" :left-padding 2 :right-padding 2)
+        d (g/box3 "GH" :top-padding 1 :bottom-padding 1)]
+    (g/halign [a b c d] 1)))
 
 (make-haligned-boxes)
 ```
@@ -156,9 +157,11 @@ which gives
 which gives
 
 ```
-+--+ ┌──┐ ╒══════╕
-|AB| │CD│ │  EF  │
-+--+ └──┘ ╘══════╛
++--+ ┌──┐ ╭──────╮ ╒══╕
+|AB| │CD│ │  EF  │ │  │
++--+ └──┘ ╰──────╯ │GH│
+                   │  │
+                   ╘══╛
 ```
 
 ### Tables
