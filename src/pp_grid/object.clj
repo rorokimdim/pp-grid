@@ -371,41 +371,25 @@
                right-padding
                top-padding
                bottom-padding
-               left-border-char
-               right-border-char
-               top-border-char
-               bottom-border-char
-               top-left-corner-char
-               top-right-corner-char
-               bottom-left-corner-char
-               bottom-right-corner-char
                fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
-             bottom-padding 0
-             left-border-char ""
-             right-border-char ""
-             top-border-char ""
-             bottom-border-char ""
-             top-left-corner-char ""
-             top-right-corner-char ""
-             bottom-left-corner-char ""
-             bottom-right-corner-char ""}}]
+             bottom-padding 0}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
        :top-padding top-padding
        :bottom-padding bottom-padding
-       :left-border-char left-border-char
-       :right-border-char right-border-char
-       :top-border-char top-border-char
-       :bottom-border-char bottom-border-char
-       :top-left-corner-char top-left-corner-char
-       :top-right-corner-char top-right-corner-char
-       :bottom-left-corner-char bottom-left-corner-char
-       :bottom-right-corner-char bottom-right-corner-char
-       :fill-escape-codes fill-escape-codes))
+       :fill-escape-codes fill-escape-codes
+       :left-border-char ""
+       :right-border-char ""
+       :top-border-char ""
+       :bottom-border-char ""
+       :top-left-corner-char ""
+       :top-right-corner-char ""
+       :bottom-left-corner-char ""
+       :bottom-right-corner-char ""))
 
 (defn box1
   "Constructs a grid wrapping given grid into a box.
@@ -421,41 +405,25 @@
                right-padding
                top-padding
                bottom-padding
-               left-border-char
-               right-border-char
-               top-border-char
-               bottom-border-char
-               top-left-corner-char
-               top-right-corner-char
-               bottom-left-corner-char
-               bottom-right-corner-char
                fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
-             bottom-padding 0
-             left-border-char "│"
-             right-border-char "│"
-             top-border-char "─"
-             bottom-border-char "─"
-             top-left-corner-char "┌"
-             top-right-corner-char "┐"
-             bottom-left-corner-char "└"
-             bottom-right-corner-char "┘"}}]
+             bottom-padding 0}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
        :top-padding top-padding
        :bottom-padding bottom-padding
-       :left-border-char left-border-char
-       :right-border-char right-border-char
-       :top-border-char top-border-char
-       :bottom-border-char bottom-border-char
-       :top-left-corner-char top-left-corner-char
-       :top-right-corner-char top-right-corner-char
-       :bottom-left-corner-char bottom-left-corner-char
-       :bottom-right-corner-char bottom-right-corner-char
-       :fill-escape-codes fill-escape-codes))
+       :fill-escape-codes fill-escape-codes
+       :left-border-char "│"
+       :right-border-char "│"
+       :top-border-char "─"
+       :bottom-border-char "─"
+       :top-left-corner-char "┌"
+       :top-right-corner-char "┐"
+       :bottom-left-corner-char "└"
+       :bottom-right-corner-char "┘"))
 
 (defn box2
   "Constructs a grid wrapping given grid into a box.
@@ -471,41 +439,25 @@
                right-padding
                top-padding
                bottom-padding
-               left-border-char
-               right-border-char
-               top-border-char
-               bottom-border-char
-               top-left-corner-char
-               top-right-corner-char
-               bottom-left-corner-char
-               bottom-right-corner-char
                fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
-             bottom-padding 0
-             left-border-char "│"
-             right-border-char "│"
-             top-border-char "─"
-             bottom-border-char "─"
-             top-left-corner-char "╭"
-             top-right-corner-char "╮"
-             bottom-left-corner-char "╰"
-             bottom-right-corner-char "╯"}}]
+             bottom-padding 0}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
        :top-padding top-padding
        :bottom-padding bottom-padding
-       :left-border-char left-border-char
-       :right-border-char right-border-char
-       :top-border-char top-border-char
-       :bottom-border-char bottom-border-char
-       :top-left-corner-char top-left-corner-char
-       :top-right-corner-char top-right-corner-char
-       :bottom-left-corner-char bottom-left-corner-char
-       :bottom-right-corner-char bottom-right-corner-char
-       :fill-escape-codes fill-escape-codes))
+       :fill-escape-codes fill-escape-codes
+       :left-border-char "│"
+       :right-border-char "│"
+       :top-border-char "─"
+       :bottom-border-char "─"
+       :top-left-corner-char "╭"
+       :top-right-corner-char "╮"
+       :bottom-left-corner-char "╰"
+       :bottom-right-corner-char "╯"))
 
 (defn box3
   "Constructs a grid wrapping given grid into a box.
@@ -521,41 +473,93 @@
                right-padding
                top-padding
                bottom-padding
-               left-border-char
-               right-border-char
-               top-border-char
-               bottom-border-char
-               top-left-corner-char
-               top-right-corner-char
-               bottom-left-corner-char
-               bottom-right-corner-char
                fill-escape-codes]
         :or {left-padding 0
              right-padding 0
              top-padding 0
-             bottom-padding 0
-             left-border-char "│"
-             right-border-char "│"
-             top-border-char "═"
-             bottom-border-char "═"
-             top-left-corner-char "╒"
-             top-right-corner-char "╕"
-             bottom-left-corner-char "╘"
-             bottom-right-corner-char "╛"}}]
+             bottom-padding 0}}]
   (box g
        :left-padding left-padding
        :right-padding right-padding
        :top-padding top-padding
        :bottom-padding bottom-padding
-       :left-border-char left-border-char
-       :right-border-char right-border-char
-       :top-border-char top-border-char
-       :bottom-border-char bottom-border-char
-       :top-left-corner-char top-left-corner-char
-       :top-right-corner-char top-right-corner-char
-       :bottom-left-corner-char bottom-left-corner-char
-       :bottom-right-corner-char bottom-right-corner-char
-       :fill-escape-codes fill-escape-codes))
+       :fill-escape-codes fill-escape-codes
+       :left-border-char ":"
+       :right-border-char ":"
+       :top-border-char "."
+       :bottom-border-char "."
+       :top-left-corner-char "."
+       :top-right-corner-char "."
+       :bottom-left-corner-char "."
+       :bottom-right-corner-char "."))
+
+(defn box4
+  "Constructs a grid wrapping given grid into a box.
+
+  Similar to box, but uses different border.
+
+  For example, (box4 (text \"HELLO\")) is
+  ╒═════╕
+  │HELLO│
+  ╘═════╛
+  "
+  [g & {:keys [left-padding
+               right-padding
+               top-padding
+               bottom-padding
+               fill-escape-codes]
+        :or {left-padding 0
+             right-padding 0
+             top-padding 0
+             bottom-padding 0}}]
+  (box g
+       :left-padding left-padding
+       :right-padding right-padding
+       :top-padding top-padding
+       :bottom-padding bottom-padding
+       :fill-escape-codes fill-escape-codes
+       :left-border-char "│"
+       :right-border-char "│"
+       :top-border-char "═"
+       :bottom-border-char "═"
+       :top-left-corner-char "╒"
+       :top-right-corner-char "╕"
+       :bottom-left-corner-char "╘"
+       :bottom-right-corner-char "╛"))
+
+(defn box5
+  "Constructs a grid wrapping given grid into a box.
+
+  Similar to box, but uses '*' for all border characters.
+
+  For example, (box5 (text \"HELLO\")) is
+  *******
+  *HELLO*
+  *******
+  "
+  [g & {:keys [left-padding
+               right-padding
+               top-padding
+               bottom-padding
+               fill-escape-codes]
+        :or {left-padding 0
+             right-padding 0
+             top-padding 0
+             bottom-padding 0}}]
+  (box g
+       :left-padding left-padding
+       :right-padding right-padding
+       :top-padding top-padding
+       :bottom-padding bottom-padding
+       :fill-escape-codes fill-escape-codes
+       :left-border-char "*"
+       :right-border-char "*"
+       :top-border-char "*"
+       :bottom-border-char "*"
+       :top-left-corner-char "*"
+       :top-right-corner-char "*"
+       :bottom-left-corner-char "*"
+       :bottom-right-corner-char "*"))
 
 (defn table
   "Constructs a table.

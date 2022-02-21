@@ -44,11 +44,14 @@
       (g/box :left-padding 1 :right-padding 1)))
 
 (defn make-haligned-boxes []
-  (let [a (g/box "AB")
-        b (g/box1 "CD")
-        c (g/box2 "EF" :left-padding 2 :right-padding 2)
-        d (g/box3 "GH" :top-padding 1 :bottom-padding 1)]
-    (g/halign [a b c d] 1)))
+  (let [b (g/box "B")
+        b0 (g/box0 "B0")
+        b1 (g/box1 "B1")
+        b2 (g/box2 "B2")
+        b3 (g/box3 "B3")
+        b4 (g/box4 "B4")
+        b5 (g/box5 "B5" :left-padding 2 :right-padding 2 :top-padding 2 :bottom-padding 2)]
+    (g/halign [b b0 b1 b2 b3 b4 b5] 1)))
 
 (defn make-tables []
   (let [data [{:a 1 :b 2 :c 3}

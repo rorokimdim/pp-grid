@@ -107,8 +107,8 @@
   (testing "haligned boxes"
     (let [grid (e/make-haligned-boxes)]
       (is (= (:dimension grid) 2))
-      (is (= (:width grid) 23))
-      (is (= (:height grid) 5))
+      (is (= (:width grid) 35))
+      (is (= (:height grid) 7))
       (is (g/grid? grid))))
   (testing "tables"
     (let [grid (e/make-tables)]
