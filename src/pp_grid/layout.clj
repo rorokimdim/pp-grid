@@ -14,23 +14,21 @@
   ([grids y-padding]
    (valign grids y-padding false))
   ([grids y-padding center?]
-   (let [grids (remove empty? grids)]
-     (if (<= (count grids) 1)
-       (first grids)
-       (let [[top bottom] (take 2 grids)
-             top-width (:width top)
-             bottom-width (:width bottom)
-             top-center-x (+ (:min-x top) (/ top-width 2))
-             bottom-center-x (+ (:min-x bottom) (/ bottom-width 2))
-             x-diff (- top-center-x bottom-center-x)
-             dx (if center? x-diff 0)
-             dy (+ y-padding (:height top))]
-         (valign
-          (cons
-           (c/add top (c/transform bottom (c/tf-translate dx dy)))
-           (drop 2 grids))
-          y-padding
-          center?))))))
+   (reduce
+    (fn [top bottom]
+      (cond
+        (empty? top) bottom
+        (empty? bottom) top
+        :else (let [top-width (:width top)
+                    bottom-width (:width bottom)
+                    top-center-x (+ (:min-x top) (/ top-width 2))
+                    bottom-center-x (+ (:min-x bottom) (/ bottom-width 2))
+                    x-diff (- top-center-x bottom-center-x)
+                    dx (if center? x-diff 0)
+                    dy (+ y-padding (:height top))]
+                (c/add top (c/transform bottom (c/tf-translate dx dy))))))
+    (first grids)
+    (rest grids))))
 
 (defn halign
   "Constructs a grid containing given grids aligned horizontally.
@@ -41,23 +39,21 @@
   ([grids x-padding]
    (halign grids x-padding false))
   ([grids x-padding center?]
-   (let [grids (remove empty? grids)]
-     (if (<= (count grids) 1)
-       (first grids)
-       (let [[left right] (take 2 grids)
-             dx (+ x-padding (:width left))
-             left-height (:height left)
-             right-height (:height right)
-             left-center-y (+ (:min-y left) (/ left-height 2))
-             right-center-y (+ (:min-y right) (/ right-height 2))
-             y-diff (- left-center-y right-center-y)
-             dy (if center? y-diff 0)]
-         (halign
-          (cons
-           (c/add left (c/transform right (c/tf-translate dx dy)))
-           (drop 2 grids))
-          x-padding
-          center?))))))
+   (reduce
+    (fn [left right]
+      (cond
+        (empty? left) right
+        (empty? right) left
+        :else (let [dx (+ x-padding (:width left))
+                    left-height (:height left)
+                    right-height (:height right)
+                    left-center-y (+ (:min-y left) (/ left-height 2))
+                    right-center-y (+ (:min-y right) (/ right-height 2))
+                    y-diff (- left-center-y right-center-y)
+                    dy (if center? y-diff 0)]
+                (c/add left (c/transform right (c/tf-translate dx dy))))))
+    (first grids)
+    (rest grids))))
 
 (defn hspacer
   "Constructs a horizontal space of given length.
