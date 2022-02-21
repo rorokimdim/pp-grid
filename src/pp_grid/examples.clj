@@ -116,7 +116,9 @@
   (g/tree [1 2 [3 4] [:a :b [10 20]]]))
 
 (defn make-chart-xy []
-  (g/chart-xy (range) [0 1 2 3 2 1 0 1 2 3 2 1 0]))
+  (g/chart-xy (range)
+              [0 1 2 3 2 1 0 1 2 3 2 1 0]
+              :max-height 3))
 
 (defn make-chart-bar []
   (g/chart-bar [20 80 100 200 400]))

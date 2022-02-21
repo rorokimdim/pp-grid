@@ -372,7 +372,9 @@ which gives
 
 ```clojure
 (defn make-chart-xy []
-  (g/chart-xy (range) [0 1 2 3 2 1 0 1 2 3 2 1 0]))
+  (g/chart-xy (range)
+              [0 1 2 3 2 1 0 1 2 3 2 1 0]
+              :max-height 3))
 
 (make-chart-xy)
 ```
@@ -383,10 +385,10 @@ which gives
 y
 ▲
 |
-|  *     *
-| * *   * *
-|*   * *   *
-*-----*-----*-▶︎ x
+|         *                   *
+|      *     *             *     *
+|  *             *     *             *
+*-------------------*-------------------*-▶ x
 ```
 
 ### Bar Chart

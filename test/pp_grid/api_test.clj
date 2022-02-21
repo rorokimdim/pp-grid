@@ -149,7 +149,7 @@
   (testing "chart-xy"
     (let [grid (e/make-chart-xy)]
       (is (= (:dimension grid) 2))
-      (is (= (:width grid) 17))
+      (is (= (:width grid) 45))
       (is (= (:height grid) 7))
       (is (g/grid? grid))))
   (testing "chart-bar"

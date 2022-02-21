@@ -899,26 +899,40 @@
 (defn chart-xy
   "Constructs a xy-chart (scatter plot).
 
-  For example, (chart-xy (range) [0 1 2 1 0 1 2 1 0]) is
+  For example, (chart-xy (range) [0 1 2 1 0 1 2 1 0] :max-height 2 :max-width 10) is
   y
   ▲
   |
-  | *   *
-  |* * * *
-  *---*---*-▶︎ x
+  |  *    *
+  |*  * *  *
+  *----*----*-▶ x
   "
   [xs ys & {:keys [point-symbol
                    draw-axis
                    x-label
-                   y-label]
+                   y-label
+                   max-width
+                   max-height]
             :or {point-symbol \*
                  draw-axis true
                  x-label "x"
-                 y-label "y"}}]
-  (let [ks (map vector xs ys)
+                 y-label "y"
+                 max-width 40
+                 max-height 10}}]
+  (let [n (count (map vector xs ys))
+        xs (take n xs)
+        ys (take n ys)
+        [min-x max-x] (apply (juxt min max) xs)
+        [min-y max-y] (apply (juxt min max) ys)
+        max-delta-x (- max-x min-x)
+        max-delta-y (- max-y min-y)
+        unit-x (/ max-width max-delta-x)
+        unit-y (/ max-height max-delta-y)
+        scaled-xs (map (fn [x] (c/round (* x unit-x))) xs)
+        scaled-ys (map (fn [y] (c/round (* y unit-y))) ys)
+        ks (map vector scaled-xs scaled-ys)
         p (as-> (c/empty-grid) $
             (apply assoc $ (interleave ks (repeat point-symbol))))
-
         p (if draw-axis
             (let [x-axis (l/===
                           1
