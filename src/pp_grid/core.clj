@@ -30,6 +30,7 @@
 (p/def-map-type Grid [m metadata]
   (get [this k default-value]
        (cond
+         (= k :m) m
          (#{:mins :maxs :dimension} k) (get metadata k default-value)
          (= k :min-x) (first (:mins metadata))
          (= k :max-x) (first (:maxs metadata))
@@ -117,27 +118,30 @@
 (defn add
   "Constructs a grid with all given grids added together."
   [& gs]
-  (cond
-    (zero? (count gs)) (empty-grid)
-    (= 1 (count gs)) (first gs)
-    :else (let [[ga gb & gcs] gs]
-            (apply add
-                   (apply assoc ga (mapcat identity gb))
-                   gcs))))
+  (let [gs (remove empty? gs)]
+    (cond
+      (empty? gs) nil
+      (= 1 (count gs)) (first gs)
+      :else (let [ga (first gs)
+                  metadata (meta ga)
+                  new-m (reduce
+                         (fn [m gb]
+                           (apply assoc m (mapcat identity gb)))
+                         (:m ga)
+                         (rest gs))]
+              (Grid. new-m (apply update-ranges metadata (keys new-m)))))))
 
 (defn subtract
   "Returns the first grid minus keys in rest of the grids."
   [& gs]
-  (cond
-    (zero? (count gs)) (empty-grid)
-    (= 1 (count gs)) (first gs)
-    :else (let [[ga gb & gcs] gs]
-            (cond
-              (empty? ga) (empty-grid)
-              (empty? gb) (apply subtract ga gcs)
-              :else (apply subtract
-                           (apply dissoc ga (keys gb))
-                           gcs)))))
+  (reduce
+   (fn [ga gb]
+     (cond
+       (empty? gb) ga
+       (empty? ga) (reduced ga)
+       :else (apply dissoc ga (keys gb))))
+   (first gs)
+   (rest gs)))
 
 (defn decorate
   "Decorates a grid with given ansi-escape-codes."
