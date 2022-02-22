@@ -29,18 +29,17 @@
 #_:clj-kondo/ignore
 (p/def-map-type Grid [m metadata]
   (get [this k default-value]
-       (cond
-         (= k :m) m
-         (#{:mins :maxs :dimension} k) (get metadata k default-value)
-         (= k :min-x) (first (:mins metadata))
-         (= k :max-x) (first (:maxs metadata))
-         (= k :min-y) (second (:mins metadata))
-         (= k :max-y) (second (:maxs metadata))
-         (= k :width) (width this)
-         (= k :height) (height this)
-         :else (if (valid-key? (:dimension metadata) k)
-                 (get m k default-value)
-                 default-value)))
+       (if (vector? k)
+         (get m k default-value)
+         (cond
+           (= k :min-x) (first (:mins metadata))
+           (= k :max-x) (first (:maxs metadata))
+           (= k :min-y) (second (:mins metadata))
+           (= k :max-y) (second (:maxs metadata))
+           (= k :width) (width this)
+           (= k :height) (height this)
+           (= k :m) m
+           :else (get metadata k default-value))))
   (assoc [this k v]
          (when (and (validate-key (:dimension metadata) k) (validate-value v))
            (if (grid? v)
@@ -198,15 +197,17 @@
   For example transformation functions, take a look at the tf-* functions."
   ([g f] (transform g f (:dimension g)))
   ([g f dimension]
-   (let [transformed (reduce
-                      (fn [acc [k v]]
-                        (let [new-k (into [] (map round (f k)))]
-                          (assoc acc new-k v)))
-                      (empty-grid dimension)
-                      g)]
-     (with-meta transformed (apply update-ranges
-                                   {:dimension dimension}
-                                   (keys transformed))))))
+   (let [transformed (persistent!
+                      (reduce
+                       (fn [acc [k v]]
+                         (let [new-k (into [] (map round (f k)))]
+                           (assoc! acc new-k v)))
+                       (transient {})
+                       g))]
+     (Grid. transformed
+            (apply update-ranges
+                   {:dimension dimension}
+                   (keys transformed))))))
 
 (defn tf-translate
   "Returns a function that translates a coordinate by given deltas.
