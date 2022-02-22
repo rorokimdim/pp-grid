@@ -124,11 +124,9 @@
       (= 1 (count gs)) (first gs)
       :else (let [ga (first gs)
                   metadata (meta ga)
-                  new-m (reduce
-                         (fn [m gb]
-                           (apply assoc m (mapcat identity gb)))
-                         (:m ga)
-                         (rest gs))]
+                  new-m (persistent! (apply assoc!
+                                            (transient (:m ga))
+                                            (mapcat identity (apply concat (rest gs)))))]
               (Grid. new-m (apply update-ranges metadata (keys new-m)))))))
 
 (defn subtract

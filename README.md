@@ -12,7 +12,7 @@ pp-grid is a clojure library to easily construct formatted text.
 It provides a grid data-structure (a `map`) and some primitive functions
 to draw text on it.
 
-Here is a `4 x 4` grid with `16` cells:
+Here is a `5 x 5` grid with `25` cells:
 
 ```
 |------------------------------------▶︎ x
