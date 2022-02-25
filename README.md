@@ -83,6 +83,14 @@ To try these examples in a repl, require pp-grid as follows.
 
 All the examples are also available in `pp-grid.examples` namespace.
 
+Depending on our repl, the examples may print the map structure, instead of the string form.
+
+We can convert any grid to its string form using `(str grid)` and print the string:
+
+```clojure
+(println (str grid))
+```
+
 ### ABCD
 
 ```clojure
