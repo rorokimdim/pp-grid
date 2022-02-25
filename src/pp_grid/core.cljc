@@ -1,69 +1,164 @@
 (ns pp-grid.core
-  (:require [clojure.string :as s]
-            [clojure.pprint]
+  (:require
+   #?@(:bb
+       [[clojure.string :as s]
+        [clojure.pprint]
 
-            [potemkin :as p]
+        [pp-grid.ansi-escape-code :as ecodes]]
+       :clj
+       [[clojure.string :as s]
+        [clojure.pprint]
 
-            [pp-grid.ansi-escape-code :as ecodes]))
+        [potemkin :as p]
+
+        [pp-grid.ansi-escape-code :as ecodes]])))
 
 (declare
  add
  compute-ranges
+ empty-grid
+ empty-metadata
  escaped-char?
  grid?
- render
- width
  height
+ render
+ render-grid
  tf-translate
  transform
  update-ranges
  valid-key?
  valid-value?
  validate-key
- validate-value)
+ validate-value
+ width)
 
 (defrecord EscapedChar [escape-code value]
   Object
   (toString [this] (render this)))
 
-#_:clj-kondo/ignore
-(p/def-map-type Grid [m metadata]
-  (get [this k default-value]
-       (if (vector? k)
-         (get m k default-value)
-         (cond
-           (= k :min-x) (first (:mins metadata))
-           (= k :max-x) (first (:maxs metadata))
-           (= k :min-y) (second (:mins metadata))
-           (= k :max-y) (second (:maxs metadata))
-           (= k :width) (width this)
-           (= k :height) (height this)
-           (= k :m) m
-           :else (get metadata k default-value))))
-  (assoc [this k v]
-         (when (and (validate-key (:dimension metadata) k) (validate-value v))
-           (if (grid? v)
-             (let [ds (map - k (:mins v))]
-               (add this (transform v (apply tf-translate ds))))
-             (Grid. (assoc m k v) (update-ranges metadata k)))))
-  (dissoc [this k]
-          (when (validate-key (:dimension metadata) k)
-            (let [new-g (Grid. (dissoc m k) metadata)
-                  dimension (:dimension metadata)]
-              (with-meta new-g (apply update-ranges {:dimension dimension} (keys new-g))))))
-  (keys [this] (keys m))
-  (meta [this] metadata)
-  (empty [this] (Grid. {} {:dimension (:dimension metadata)}))
-  (with-meta [this metadata] (Grid. m metadata))
-  clojure.lang.IPersistentCollection
-  (equiv
-   [this x]
-   (if (string? x)
-     (= (render this) x)
-     (and (or (instance? java.util.Map x) (map? x))
-          (= x m))))
-  Object
-  (toString [this] (render this)))
+#?(:bb
+   :skip
+   :clj
+   #_:clj-kondo/ignore
+   (p/def-map-type Grid [m metadata]
+     (get [this k default-value]
+          (if (vector? k)
+            (get m k default-value)
+            (cond
+              (= k :min-x) (first (:mins metadata))
+              (= k :max-x) (first (:maxs metadata))
+              (= k :min-y) (second (:mins metadata))
+              (= k :max-y) (second (:maxs metadata))
+              (= k :width) (width this)
+              (= k :height) (height this)
+              (= k :m) m
+              :else (get metadata k default-value))))
+     (assoc [this k v]
+            (when (and (validate-key (:dimension metadata) k) (validate-value v))
+              (if (grid? v)
+                (let [ds (map - k (:mins v))]
+                  (add this (transform v (apply tf-translate ds))))
+                (Grid. (assoc m k v) (update-ranges metadata k)))))
+     (dissoc [this k]
+             (when (validate-key (:dimension metadata) k)
+               (let [new-g (Grid. (dissoc m k) metadata)
+                     dimension (:dimension metadata)]
+                 (with-meta new-g (apply update-ranges
+                                         (empty-metadata dimension)
+                                         (keys new-g))))))
+     (keys [this] (keys m))
+     (meta [this] metadata)
+     (empty [this] (Grid. (empty m) (empty-metadata (:dimension metadata))))
+     (with-meta [this metadata] (Grid. m metadata))
+     clojure.lang.IPersistentCollection
+     (equiv
+      [this x]
+      (if (string? x)
+        (= (render this) x)
+        (and (or (instance? java.util.Map x) (map? x))
+             (= x m))))
+     Object
+     (toString [this] (render this))))
+
+#?(:bb
+   (defn ->Grid
+     "Adapted from https://blog.wsscode.com/guide-to-custom-map-types/."
+     [m metadata]
+     (let [->GridEntry (fn [k v]
+                         (proxy [clojure.lang.AMapEntry] []
+                           (key [] k)
+                           (val [] v)
+                           (getKey [] k)
+                           (getValue [] v)))
+           lookup (fn [k default-value]
+                    (if (vector? k)
+                      (get m k default-value)
+                      (cond
+                        (= k :min-x) (first (:mins metadata))
+                        (= k :max-x) (first (:maxs metadata))
+                        (= k :min-y) (second (:mins metadata))
+                        (= k :max-y) (second (:maxs metadata))
+                        (= k :width) (width (->Grid m metadata))
+                        (= k :height) (height (->Grid m metadata))
+                        (= k :m) m
+                        :else (get metadata k default-value))))]
+       (proxy [clojure.lang.APersistentMap
+               clojure.lang.IMeta
+               clojure.lang.IObj]
+           []
+         (valAt
+           ([k]
+            (lookup k nil))
+           ([k default-value]
+            (lookup k default-value)))
+         (iterator []
+           (.iterator ^java.lang.Iterable
+                      (eduction
+                       (map #(->GridEntry % (get this %)))
+                       (keys m))))
+
+         (containsKey [k] (or (contains? m k)
+                              (#{:min-x :max-x
+                                 :min-y :max-y
+                                 :width :height
+                                 :m} k)))
+         (entryAt [k]
+           (let [default (gensym)
+                 v (lookup k default)]
+             (when (not= v default)
+               (->GridEntry k v))))
+         (equiv [x]
+           (if (string? x)
+             (= (render (->Grid m metadata)) x)
+             (= m x)))
+         (empty [] (->Grid (empty m) (empty-metadata (:dimension metadata))))
+         (count [] (count m))
+         (assoc [k v]
+           (when (and (validate-key (:dimension metadata) k) (validate-value v))
+             (if (grid? v)
+               (let [ds (map - k (:mins v))]
+                 (add (->Grid m metadata) (transform v (apply tf-translate ds))))
+               (->Grid (assoc m k v) (update-ranges metadata k)))))
+         (without [k]
+           (when (validate-key (:dimension metadata) k)
+             (let [dimension (:dimension metadata)
+                   new-g (->Grid (dissoc m k) {})]
+               (with-meta new-g (apply update-ranges
+                                       (empty-metadata dimension)
+                                       (keys new-g))))))
+         (seq [] (some->> (keys m)
+                          (map #(->GridEntry % (get this %)))))
+         (meta [] metadata)
+         (withMeta [meta] (->Grid m meta))
+         (toString []
+           (render-grid (->Grid m metadata))))))
+   :clj
+   (defn ->Grid [m metadata]
+     (Grid. m metadata)))
+
+(defn empty-metadata
+  ([] (empty-metadata 2))
+  ([dimension] {:dimension dimension :grid? true}))
 
 (defn empty-grid
   ([]
@@ -71,7 +166,7 @@
   ([dimension]
    {:pre [(integer? dimension)
           (pos? dimension)]}
-   (Grid. {} {:dimension dimension})))
+   (->Grid {} (empty-metadata dimension))))
 
 (defn width [x]
   (cond
@@ -96,8 +191,12 @@
 (defn escaped-char? [x]
   (instance? EscapedChar x))
 
-(defn grid? [x]
-  (instance? Grid x))
+#?(:bb
+   (defn grid? [x]
+     (boolean (:grid? (meta x))))
+   :clj
+   (defn grid? [x]
+     (instance? Grid x)))
 
 (defn escaped-char [c escape-code]
   (->EscapedChar escape-code c))
@@ -126,7 +225,7 @@
                   new-m (apply assoc
                                (:m ga)
                                (mapcat identity (apply concat (rest gs))))]
-              (Grid. new-m (apply update-ranges metadata (keys new-m)))))))
+              (->Grid new-m (apply update-ranges metadata (keys new-m)))))))
 
 (defn subtract
   "Returns the first grid minus keys in rest of the grids."
@@ -171,7 +270,11 @@
    (= (count k) dimension)))
 
 (defn valid-value? [v]
-  (contains? (methods render) (type v)))
+  (or (grid? v)
+      (string? v)
+      (escaped-char? v)
+      (char? v)
+      (contains? (methods render) (type v))))
 
 (defn validate-key [dimension k]
   (when-not (valid-key? dimension k)
@@ -181,7 +284,7 @@
 
 (defn validate-value [v]
   (when-not (valid-value? v)
-    (throw (IllegalArgumentException. "Value must be a char, a Grid or a EscapedChar")))
+    (throw (IllegalArgumentException. (str  "Value must be a char, a Grid or a EscapedChar; got " v))))
   true)
 
 (defn round [n]
@@ -204,10 +307,10 @@
                            (assoc! acc new-k v)))
                        (transient {})
                        g))]
-     (Grid. transformed
-            (apply update-ranges
-                   {:dimension dimension}
-                   (keys transformed))))))
+     (->Grid transformed
+             (apply update-ranges
+                    (empty-metadata dimension)
+                    (keys transformed))))))
 
 (defn tf-translate
   "Returns a function that translates a coordinate by given deltas.
@@ -312,6 +415,7 @@
           get-rendered (fn [x] (render (get g [x] " ")))]
       (apply str (map get-rendered xs)))))
 
+#_{:clj-kondo/ignore [:unresolved-namespace]}
 (defmethod render-grid 2 [g]
   (if (empty? g)
     nil
@@ -334,33 +438,35 @@
 
 (defmulti ^String render type)
 
-(defmethod render Grid [g]
-  (if (empty? g)
-    nil
-    (render-grid g)))
+(defmethod render String [x] x)
 
+(defmethod render :default [x]
+  (if (grid? x)
+    (render-grid x)
+    (str x)))
+
+#_{:clj-kondo/ignore [:unresolved-namespace]}
 (defmethod render EscapedChar [x]
   (str (:escape-code x)
        (:value x)
        ecodes/ESCAPE-CODE-RESET))
 
-(defmethod render java.lang.Character [x]
-  (str x))
-
-(defmethod render String [x] x)
 
 ;;
 ;; Overwrite how Grid and EscapedChar get printed: Make them print the rendered string
 ;;
+#?(:bb
+   :skip
+   :clj
+   (do
+     (defmethod print-method Grid [g ^java.io.Writer w]
+       (.write w (render g)))
 
-(defmethod print-method Grid [g ^java.io.Writer w]
-  (.write w (render g)))
+     (defmethod print-method EscapedChar [x ^java.io.Writer w]
+       (.write w (render x)))
 
-(defmethod print-method EscapedChar [x ^java.io.Writer w]
-  (.write w (render x)))
+     (defmethod clojure.pprint/simple-dispatch Grid [g]
+       (println (render g)))
 
-(defmethod clojure.pprint/simple-dispatch Grid [g]
-  (println (render g)))
-
-(defmethod clojure.pprint/simple-dispatch EscapedChar [x]
-  (println (render x)))
+     (defmethod clojure.pprint/simple-dispatch EscapedChar [x]
+       (println (render x)))))
