@@ -15,8 +15,12 @@
 #?(:bb
    (do
      (defmacro import-public-vars [ns]
-       `(do ~@(for [i (map first (ns-publics ns))]
-                `(def ~i ~(symbol (str ns "/" i))))))
+       `(do ~@(for [[n# v#] (map (partial take 2) (ns-publics ns))]
+                (let [meta# (meta v#)
+                      doc# (:doc meta#)]
+                  (if (nil? doc#)
+                    `(def ~n# ~(symbol (str ns "/" n#)))
+                    `(def ~n# ~doc# ~(symbol (str ns "/" n#))))))))
 
      (import-public-vars pp-grid.core)
      (import-public-vars pp-grid.object)
