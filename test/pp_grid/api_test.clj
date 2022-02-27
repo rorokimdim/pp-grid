@@ -175,4 +175,10 @@
       (is (= (:dimension grid) 2))
       (is (= (:width grid) 82))
       (is (= (:height grid) 12))
+      (is (g/grid? grid))))
+  (testing "paragraphs"
+    (let [grid (e/make-paragraphs)]
+      (is (= (:dimension grid) 2))
+      (is (= (:width grid) 80))
+      (is (= (:height grid) 15))
       (is (g/grid? grid)))))

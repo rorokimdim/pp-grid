@@ -1,5 +1,6 @@
 (ns pp-grid.object
   (:require [clojure.string :as s]
+            [clojure.pprint :as pp]
 
             [pp-grid.ansi-escape-code :as ecodes]
             [pp-grid.core :as c]
@@ -13,7 +14,9 @@
 
   Each line in the string is put in a new row."
   ([s]
-   (text s 0 0))
+   (text s 0))
+  ([s padding]
+   (text s padding padding))
   ([s pad-left pad-right]
    (text s pad-left pad-right \space))
   ([s pad-left pad-right pad-char]
@@ -34,6 +37,27 @@
                         (apply str (repeat pad-right pad-char))))))
            (c/empty-grid)))
      (text (str s) pad-left pad-right pad-char))))
+
+(defn paragraph
+  "Constructs a grid containing a paragraph of text.
+
+  By default paragraphs have max-width of 80 chars. If any word
+  is longer than max-width chars, it will appear alone in a line without
+  being truncated."
+  ([s]
+   (paragraph s 0))
+  ([s padding]
+   (paragraph s padding padding))
+  ([s pad-left pad-right]
+   (paragraph s pad-left pad-right 80))
+  ([s pad-left pad-right max-width]
+   (paragraph s pad-left pad-right max-width 0))
+  ([s pad-left pad-right max-width first-line-indent]
+   (as-> s $
+     (s/split $ #"\s+")
+     (pp/cl-format nil (str "~{~<~%~1," max-width ":;~A~> ~}") $)
+     (text (str (apply str (repeat first-line-indent \space)) $)
+           pad-left pad-right))))
 
 (defn decorate
   "Decorates a grid or a string-convertible value with given ansi-escape-codes."

@@ -93,6 +93,7 @@
      hfill
      hline
      matrix
+     paragraph
      table
      table*
      table0

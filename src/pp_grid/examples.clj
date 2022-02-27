@@ -158,3 +158,21 @@
         c2 (-> (g/arrow-ne 3 "/" "*" "e")
                (assoc [0 0] (g/arrow-se 3 "\\" "*" "f")))]
     (g/halign (interpose ra [c0 c c1 c2]) 1 true)))
+
+(defn make-paragraphs []
+  (let [p0 (g/paragraph
+            "Lorem ipsum dolor sit amet. Et dolor minima non expedita
+             exercitationem nam quibusdam totam. Et voluptatibus sint a
+             provident harum ut totam reprehenderit.")
+        p1 (g/paragraph
+            "In quia voluptas ad voluptates enim ut officia quaerat
+             quo illum atque. Ut veniam dolorem non nisi quia est facere
+             iure est dolore eius non tenetur voluptatem. 33 autem
+             sequi et itaque totam sed reiciendis adipisci est quaerat voluptas.
+             Qui suscipit corrupti qui natus adipisci est voluptatibus cumque
+             sed natus rerum et dolores blanditiis et iusto quibusdam?" 0 0 60 1)
+        p2 (g/paragraph
+            "Ut iste libero et debitis alias eum possimus maxime. Eum magnam
+             aspernatur ex accusamus commodi distinctio quia aut nostrum
+             molestiae non totam reprehenderit quo inventore sequi." 0 0 50 3)]
+    (g/valign [p0 p1 p2] 1)))
