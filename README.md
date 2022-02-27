@@ -544,6 +544,10 @@ which gives
 +--------------------------------+
 ```
 
+## Babashka and GraalVM
+
+Expected to be compatible with both Babashka and GraalVM. Please file an issue otherwise.
+
 ## Clerk notebooks
 
 For viewing grids in a [clerk](https://github.com/nextjournal/clerk) notebook, we can
