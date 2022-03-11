@@ -315,6 +315,19 @@
     (arrow-ne n body-char start-char end-char)
     (c/tf-hflip))))
 
+(def default-box-options {:left-padding 0
+                          :right-padding 0
+                          :top-padding 0
+                          :bottom-padding 0
+                          :left-border-char \|
+                          :right-border-char \|
+                          :top-border-char \-
+                          :bottom-border-char \-
+                          :top-left-corner-char \+
+                          :top-right-corner-char \+
+                          :bottom-left-corner-char \+
+                          :bottom-right-corner-char \+})
+
 (defn box
   "Constructs a grid wrapping given grid (or a string-convertible value) into a box.
 
@@ -348,40 +361,41 @@
              top-right-corner-char \+
              bottom-left-corner-char \+
              bottom-right-corner-char \+}
-        :as opts}]
-  (if (c/grid? g)
-    (let [origin-x (:min-x g)
-          origin-y (:min-y g)
-          move-to-origin (fn [o]
-                           (if (and (zero? origin-x) (zero? origin-y))
-                             o
-                             (c/transform o (c/tf-translate origin-x origin-y))))
-          width (+ (:width g) left-padding right-padding)
-          height (+ (:height g) top-padding bottom-padding 2)
-          left-line (vline height left-border-char top-left-corner-char bottom-left-corner-char)
-          right-line (vline height
-                            right-border-char
-                            top-right-corner-char
-                            bottom-right-corner-char)
-          top-line (hline width top-border-char)
-          bottom-line (hline width bottom-border-char)
-          content (l/valign [(vfill top-padding \space)
-                             (l/halign [(hfill left-padding) g (hfill right-padding)])
-                             (vfill bottom-padding \space)])
-          filled-content (if (nil? fill-escape-codes)
-                           content
-                           (let [filled-box (fill (+ (:width g) left-padding right-padding)
-                                                  (+ (:height g) top-padding bottom-padding)
-                                                  \space)]
-                             (apply decorate (assoc filled-box [0 0] content)
-                                    fill-escape-codes)))]
-      (l/halign
-       [(move-to-origin left-line)
-        (l/valign [(move-to-origin top-line)
-                   filled-content
-                   (move-to-origin bottom-line)])
-        (move-to-origin right-line)]))
-    (apply box (text (str g)) (apply concat opts))))
+        :as provided-opts}]
+  (let [opts (merge default-box-options provided-opts)]
+    (if (c/grid? g)
+      (let [origin-x (:min-x g)
+            origin-y (:min-y g)
+            move-to-origin (fn [o]
+                             (if (and (zero? origin-x) (zero? origin-y))
+                               o
+                               (c/transform o (c/tf-translate origin-x origin-y))))
+            width (+ (:width g) left-padding right-padding)
+            height (+ (:height g) top-padding bottom-padding 2)
+            left-line (vline height left-border-char top-left-corner-char bottom-left-corner-char)
+            right-line (vline height
+                              right-border-char
+                              top-right-corner-char
+                              bottom-right-corner-char)
+            top-line (hline width top-border-char)
+            bottom-line (hline width bottom-border-char)
+            content (l/valign [(vfill top-padding \space)
+                               (l/halign [(hfill left-padding) g (hfill right-padding)])
+                               (vfill bottom-padding \space)])
+            filled-content (if (nil? fill-escape-codes)
+                             content
+                             (let [filled-box (fill (+ (:width g) left-padding right-padding)
+                                                    (+ (:height g) top-padding bottom-padding)
+                                                    \space)]
+                               (apply decorate (assoc filled-box [0 0] content)
+                                      fill-escape-codes)))]
+        (l/halign
+         [(move-to-origin left-line)
+          (l/valign [(move-to-origin top-line)
+                     filled-content
+                     (move-to-origin bottom-line)])
+          (move-to-origin right-line)]))
+      (apply box (text (str g)) (apply concat opts)))))
 
 (defn box0
   "Constructs a grid wrapping given grid into a border-less box.
