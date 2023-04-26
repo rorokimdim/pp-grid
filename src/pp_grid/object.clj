@@ -635,6 +635,7 @@
                      ne-char
                      se-char
                      sw-char
+                     align
                      header?
                      row-decorations]
               :or {nsew-char \+
@@ -648,7 +649,8 @@
                    ne-char \+
                    se-char \+
                    sw-char \+
-                   header? true}}]
+                   header? true
+                   align :right}}]
   (let [widths (map
                 (fn [k]
                   (apply max
@@ -656,7 +658,7 @@
                          (map #(c/width (get % k)) rows)))
                 ks)
         spacers (map #(apply str (repeat % ew-char)) widths)
-        fmts (map #(str "%" % "s") widths)
+        fmts (map #(str (if (= align :right) "%" "%-") % "s") widths)
         fmt-row (fn [leader divider trailer row]
                   (let [vs (map #(get row %) ks)
                         heights (map c/height vs)
@@ -729,8 +731,10 @@
   ([ks rows]
    (table0 ks rows true))
   ([ks rows header?]
-   (table0 ks rows header? nil))
-  ([ks rows header? row-decorations]
+   (table0 ks rows header? :right))
+  ([ks rows header? align]
+   (table0 ks rows header? align nil))
+  ([ks rows header? align row-decorations]
    (table ks rows
           :nsew-char ""
           :nse-char ""
@@ -743,6 +747,7 @@
           :sw-char ""
           :ne-char ""
           :nw-char ""
+          :align align
           :header? header?
           :row-decorations row-decorations)))
 
@@ -764,8 +769,10 @@
   ([ks rows]
    (table1 ks rows true))
   ([ks rows header?]
-   (table1 ks rows header? nil))
-  ([ks rows header? row-decorations]
+   (table1 ks rows header? :right))
+  ([ks rows header? align]
+   (table1 ks rows header? align nil))
+  ([ks rows header? align row-decorations]
    (table ks rows
           :nsew-char "┼"
           :nse-char "├"
@@ -779,6 +786,7 @@
           :ne-char "└"
           :nw-char "┘"
           :header? header?
+          :align align
           :row-decorations row-decorations)))
 
 (defn table2
@@ -799,8 +807,10 @@
   ([ks rows]
    (table2 ks rows true))
   ([ks rows header?]
-   (table2 ks rows header? nil))
-  ([ks rows header? row-decorations]
+   (table2 ks rows header? :right))
+  ([ks rows header? align]
+   (table2 ks rows header? align  nil))
+  ([ks rows header? align row-decorations]
    (table ks rows
           :nsew-char "┼"
           :nse-char "├"
@@ -814,6 +824,7 @@
           :ne-char "╰"
           :nw-char "╯"
           :header? header?
+          :align align
           :row-decorations row-decorations)))
 
 (defn table3
@@ -834,8 +845,10 @@
   ([ks rows]
    (table3 ks rows true))
   ([ks rows header?]
-   (table3 ks rows header? nil))
-  ([ks rows header? row-decorations]
+   (table3 ks rows header? :right))
+  ([ks rows header? align]
+   (table3 ks rows header? align nil))
+  ([ks rows header? align row-decorations]
    (table ks rows
           :nsew-char "."
           :nse-char "."
@@ -849,6 +862,7 @@
           :ne-char ":"
           :nw-char ":"
           :header? header?
+          :align align
           :row-decorations row-decorations)))
 
 (defn table*

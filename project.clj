@@ -1,4 +1,4 @@
-(defproject org.clojars.rorokimdim/pp-grid "0.1.16"
+(defproject org.clojars.rorokimdim/pp-grid "0.1.17"
   :description "A clojure library for constructing formatted text."
   :url "https://github.com/rorokimdim/pp-grid"
   :license {:name "MIT License"

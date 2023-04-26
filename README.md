@@ -305,9 +305,9 @@ Tables can also be decorated by passing in a sequence of ansi-escape-codes. For 
               {:a 10 :b 20}
               {:a 100 :b 200}
               {:a 1000 :b 2000}]]
-    (g/table2 [:a :b] data true [g/ESCAPE-CODE-BACKGROUND-GREEN
-                                 g/ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
-                                 g/ESCAPE-CODE-BACKGROUND-BRIGHT-BLUE])))
+    (g/table2 [:a :b] data true :right [g/ESCAPE-CODE-BACKGROUND-GREEN
+                                        g/ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
+                                        g/ESCAPE-CODE-BACKGROUND-BRIGHT-BLUE])))
 
 (make-colored-table)
 ```
