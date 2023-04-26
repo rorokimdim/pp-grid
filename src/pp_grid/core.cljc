@@ -86,10 +86,10 @@
      [m metadata]
      (let [->GridEntry (fn [k v]
                          (proxy [clojure.lang.AMapEntry] []
-                           (key [] k)
-                           (val [] v)
-                           (getKey [] k)
-                           (getValue [] v)))
+                                (key [] k)
+                                (val [] v)
+                                (getKey [] k)
+                                (getValue [] v)))
            lookup (fn [k default-value]
                     (if (vector? k)
                       (get m k default-value)
@@ -105,53 +105,55 @@
        (proxy [clojure.lang.APersistentMap
                clojure.lang.IMeta
                clojure.lang.IObj]
-           []
-         (valAt
-           ([k]
-            (lookup k nil))
-           ([k default-value]
-            (lookup k default-value)))
-         (iterator []
-           (.iterator ^java.lang.Iterable
-                      (eduction
-                       (map #(->GridEntry % (get this %)))
-                       (keys m))))
-
-         (containsKey [k] (or (contains? m k)
-                              (#{:min-x :max-x
-                                 :min-y :max-y
-                                 :width :height
-                                 :m} k)))
-         (entryAt [k]
-           (let [default (gensym)
-                 v (lookup k default)]
-             (when (not= v default)
-               (->GridEntry k v))))
-         (equiv [x]
-           (if (string? x)
-             (= (render (->Grid m metadata)) x)
-             (= m x)))
-         (empty [] (->Grid (empty m) (empty-metadata (:dimension metadata))))
-         (count [] (count m))
-         (assoc [k v]
-           (when (and (validate-key (:dimension metadata) k) (validate-value v))
-             (if (grid? v)
-               (let [ds (map - k (:mins v))]
-                 (add (->Grid m metadata) (transform v (apply tf-translate ds))))
-               (->Grid (assoc m k v) (update-ranges metadata k)))))
-         (without [k]
-           (when (validate-key (:dimension metadata) k)
-             (let [dimension (:dimension metadata)
-                   new-g (->Grid (dissoc m k) {})]
-               (with-meta new-g (apply update-ranges
-                                       (empty-metadata dimension)
-                                       (keys new-g))))))
-         (seq [] (some->> (keys m)
-                          (map #(->GridEntry % (get this %)))))
-         (meta [] metadata)
-         (withMeta [meta] (->Grid m meta))
-         (toString []
-           (render-grid (->Grid m metadata))))))
+              []
+              (valAt
+               ([k]
+                (lookup k nil))
+               ([k default-value]
+                (lookup k default-value)))
+              (iterator []
+                        ;; does not work
+                        ;; so need to avoid using this.
+                        ;; one work around is to iterate over a seq of grid
+                        (.iterator ^java.lang.Iterable
+                                   (eduction
+                                    (map #(->GridEntry % (get this %)))
+                                    (keys m))))
+              (containsKey [k] (or (contains? m k)
+                                   (#{:min-x :max-x
+                                      :min-y :max-y
+                                      :width :height
+                                      :m} k)))
+              (entryAt [k]
+                       (let [default (gensym)
+                             v (lookup k default)]
+                         (when (not= v default)
+                           (->GridEntry k v))))
+              (equiv [x]
+                     (if (string? x)
+                       (= (render (->Grid m metadata)) x)
+                       (= m x)))
+              (empty [] (->Grid (empty m) (empty-metadata (:dimension metadata))))
+              (count [] (count m))
+              (assoc [k v]
+                     (when (and (validate-key (:dimension metadata) k) (validate-value v))
+                       (if (grid? v)
+                         (let [ds (map - k (:mins v))]
+                           (add (->Grid m metadata) (transform v (apply tf-translate ds))))
+                         (->Grid (assoc m k v) (update-ranges metadata k)))))
+              (without [k]
+                       (when (validate-key (:dimension metadata) k)
+                         (let [dimension (:dimension metadata)
+                               new-g (->Grid (dissoc m k) {})]
+                           (with-meta new-g (apply update-ranges
+                                                   (empty-metadata dimension)
+                                                   (keys new-g))))))
+              (seq [] (some->> (keys m)
+                               (map #(->GridEntry % (get this %)))))
+              (meta [] metadata)
+              (withMeta [meta] (->Grid m meta))
+              (toString []
+                        (render-grid (->Grid m metadata))))))
    :clj
    (defn ->Grid [m metadata]
      (Grid. m metadata)))
@@ -306,7 +308,7 @@
                          (let [new-k (into [] (map round (f k)))]
                            (assoc! acc new-k v)))
                        (transient {})
-                       g))]
+                       (seq g)))]
      (->Grid transformed
              (apply update-ranges
                     (empty-metadata dimension)
@@ -438,7 +440,7 @@
 
 (defmulti ^String render type)
 
-(defmethod render String [x] x)
+(defmethod render java.lang.String [x] x)
 
 (defmethod render :default [x]
   (if (grid? x)

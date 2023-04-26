@@ -72,7 +72,7 @@
                      (c/->EscapedChar escape-code v))]
          (assoc acc k new-v)))
      (empty x)
-     x)
+     (seq x))
     (apply decorate (text x) escape-code escape-codes)))
 
 (defn hline
