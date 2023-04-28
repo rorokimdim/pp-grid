@@ -614,12 +614,16 @@
   |  3 |  4 |
   +----+----+
 
+  By default, columns are right aligned. For left pass in ':align :left', for
+  center pass ':align :center'.
+
   row-decorations keyword-argument can be provided. It is a sequence
   of ansi-escape codes. If header? is true, the header will be decorated with
   the first ansi-escape code in row-decorations. And the other rows will be decorated
   with the rest -- if there aren't enough, we'll just cycle over the
   given ansi-escape-codes. For example, try
   (table [:a :b] [{:a 1 :b 2} {:a 3 :b 4}]
+         :align :left
          :row-decorations [ESCAPE-CODE-BACKGROUND-BRIGHT-GREEN
                            ESCAPE-CODE-BACKGROUND-BRIGHT-MAGENTA
                            ESCAPE-CODE-BACKGROUND-BLUE])
@@ -658,7 +662,12 @@
                          (map #(c/width (get % k)) rows)))
                 ks)
         spacers (map #(apply str (repeat % ew-char)) widths)
-        fmts (map #(str (if (= align :right) "%" "%-") % "s") widths)
+        fmts (map (fn [w]
+                    (condp = align
+                      :left (str "~" w ":A")
+                      :right (str "~" w ":@A")
+                      :center (str "~" w ":@<~A~>")))
+                  widths)
         fmt-row (fn [leader divider trailer row]
                   (let [vs (map #(get row %) ks)
                         heights (map c/height vs)
@@ -673,7 +682,7 @@
                        (as-> (interpose
                               divider
                               (for [[col fmt] (map vector cols fmts)]
-                                (format fmt (str col)))) $
+                                (clojure.pprint/cl-format nil fmt (str col)))) $
                          (apply str $)
                          (str leader $ trailer))))))
         top-border (text (fmt-row
