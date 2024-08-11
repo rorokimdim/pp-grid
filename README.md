@@ -1,9 +1,6 @@
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.rorokimdim/pp-grid.svg)](https://clojars.org/org.clojars.rorokimdim/pp-grid)
 [![cljdoc badge](https://cljdoc.org/badge/org.clojars.rorokimdim/pp-grid)](https://cljdoc.org/d/org.clojars.rorokimdim/pp-grid)
 [![CircleCI](https://circleci.com/gh/rorokimdim/pp-grid/tree/master.svg?style=svg)](https://circleci.com/gh/rorokimdim/pp-grid/tree/master)
-[![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
-
-`Note: Alpha status. Each new version might have breaking changes.`
 
 # pp-grid
 
